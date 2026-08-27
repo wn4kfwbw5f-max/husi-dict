@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0f1115" />
+<title>胡思辞典 · 使用中枢</title>
+<style>
+  :root{
+    --bg:#0f1115; --bg2:#14171e; --panel:#171b23; --card:#1c212b;
+    --ink:#f3f4f7; --ink-soft:#9aa1ad; --line:rgba(255,255,255,.08);
+    --accent:#FF8A5B; --accent2:#E6728F; --ok:#5d8a63;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+    background:radial-gradient(120% 80% at 50% -10%, #1a1f29 0%, var(--bg) 55%);
+    color:var(--ink); min-height:100vh; min-height:100dvh;
+  }
+  .wrap{max-width:640px;margin:0 auto;padding:24px 18px calc(48px + env(safe-area-inset-bottom));}
+  .topbar{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+  .brand{font-size:22px;font-weight:900;letter-spacing:.5px;display:flex;align-items:center;gap:8px;}
+  .brand .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent);}
+  .sub{color:var(--ink-soft);font-size:13px;margin:0 0 22px;line-height:1.7;}
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px 20px 18px;
+    margin-bottom:16px;transition:transform .15s, border-color .2s;display:block;text-decoration:none;color:var(--ink);
+  }
+  .card:hover{border-color:rgba(255,138,91,.45);transform:translateY(-2px);}
+  .card .ico{font-size:24px;margin-bottom:6px;}
+  .card h2{margin:0 0 4px;font-size:19px;font-weight:900;letter-spacing:.5px;}
+  .card .tag{display:inline-block;font-size:11px;font-weight:800;border-radius:999px;padding:2px 10px;margin-left:8px;vertical-align:2px;}
+  .tag.main{background:rgba(255,138,91,.15);color:var(--accent);border:1px solid rgba(255,138,91,.4);}
+  .tag.admin{background:rgba(230,114,143,.15);color:var(--accent2);border:1px solid rgba(230,114,143,.4);}
+  .card .desc{color:var(--ink-soft);font-size:13px;line-height:1.75;margin-top:6px;}
+  .card .link{color:var(--accent);font-size:12.5px;margin-top:10px;word-break:break-all;display:flex;align-items:center;gap:5px;}
+
+  .guide{margin-top:8px;}
+  .guide h3{font-size:14px;font-weight:900;color:var(--ink);margin:22px 0 10px;display:flex;align-items:center;gap:6px;}
+  .guide h3 .bar{width:4px;height:14px;border-radius:2px;background:linear-gradient(180deg,var(--accent),var(--accent2));}
+  .steps{display:flex;flex-direction:column;gap:8px;}
+  .step{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:11px 14px;font-size:13.5px;line-height:1.7;color:var(--ink-soft);}
+  .step b{color:var(--ink);font-weight:800;}
+  .step .n{display:inline-flex;width:20px;height:20px;border-radius:50%;background:var(--accent);color:#1a1206;font-size:12px;font-weight:900;align-items:center;justify-content:center;margin-right:8px;vertical-align:1px;}
+  .step .n2{background:var(--accent2);}
+  .foot{margin-top:26px;text-align:center;color:#5b626e;font-size:12px;line-height:1.8;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand"><span class="dot"></span>胡思辞典 · 使用中枢</div>
+  </div>
+  <p class="sub">所有入口 + 指引都在这一页。主站给使用者用，后台给你自己用。</p>
+
+  <a class="card" href="https://husidict.top" target="_blank">
+    <div class="ico">📖</div>
+    <h2>胡思辞典 · 主站 <span class="tag main">使用者</span></h2>
+    <div class="desc">深色搜索引擎：搜任意词出胡思词卡，支持存相册 / 收藏 / AI 润色 / 抽卡。使用者在里面留言投稿。</div>
+    <div class="link">https://husidict.top →</div>
+  </a>
+
+  <a class="card" href="https://6958fc30803841e0bd177be4781212f0.app.workbuddy.link" target="_blank">
+    <div class="ico">🛠️</div>
+    <h2>胡思辞典 · 词条后台 <span class="tag admin">你自己</span></h2>
+    <div class="desc">加词专用：填词 / 词性 / 释义，乱想Time 交给 AI。保存后主站刷新即同步。</div>
+    <div class="link">https://6958fc30803841e0bd177be4781212f0.app.workbuddy.link →</div>
+  </a>
+
+  <div class="guide">
+    <h3><span class="bar"></span>📖 主站怎么用（使用者视角）</h3>
+    <div class="steps">
+      <div class="step"><span class="n">1</span><b>搜词</b>：中央搜索框输入任意词回车 → 词卡滑入（内置 370+ 词秒出，冷门词 AI 即兴编）</div>
+      <div class="step"><span class="n">2</span><b>抽卡</b>：点「🎲 抽个胡思」→ 随机词卡，每次不同</div>
+      <div class="step"><span class="n">3</span><b>存相册</b>：词卡点「📥 存相册」→ 生成图片 → 长按保存到手机</div>
+      <div class="step"><span class="n">4</span><b>收藏</b>：点「⭐ 收藏」→ 存本地，右上角「⭐ 收藏」查看，可导出备份</div>
+      <div class="step"><span class="n">5</span><b>留言投稿</b>：点右上「✉️ 投稿」→ 打开小红书给作者留言，作者会手动收进辞典</div>
+    </div>
+
+    <h3><span class="bar"></span>🛠️ 后台怎么用（你的视角）</h3>
+    <div class="steps">
+      <div class="step"><span class="n2">1</span>打开后台链接 → 输入密钥 <b>husi-admin-7q2x9k3m</b> 登录</div>
+      <div class="step"><span class="n2">2</span>点「<b>＋ 新增词条</b>」→ 填：<b>词</b>（如 班味）/ <b>词性</b>（名词）/ <b>释义</b>（你写的一句俏皮定义）</div>
+      <div class="step"><span class="n2">3</span>乱想Time 不用管 → 直接点「<b>保存</b>」→ AI 自动按你填的词+释义生成延展</div>
+      <div class="step"><span class="n2">4</span>打开主站（刷新一下）→ 搜这个词 → 能搜到即同步成功 ✅</div>
+    </div>
+
+    <h3><span class="bar"></span>💡 日常流转</h3>
+    <div class="steps">
+      <div class="step">使用者在小红书给你留言「想加个词：xxx」→ 你记下来 → 打开后台加词 → 主站自动有。全程不用管代码。</div>
+    </div>
+  </div>
+
+  <div class="foot">
+    胡思辞典 · 搜索形态小工具<br/>
+    主站 / 后台均为测试预览链接，正式上架小红书前会更新
+  </div>
+</div>
+</body>
+</html>
