@@ -1,0 +1,20 @@
+{
+  "name": "胡思辞典",
+  "short_name": "胡思辞典",
+  "description": "一本离谱却合理的另类词典。输入任意词，得到专属的、画面感十足的胡思释义与「乱想Time」。",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f1115",
+  "theme_color": "#FF8A5B",
+  "lang": "zh-CN",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

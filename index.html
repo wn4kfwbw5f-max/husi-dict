@@ -1,0 +1,612 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+<meta name="theme-color" content="#0f1115" />
+<title>胡思辞典 · 搜一个词，看它本该是什么样子</title>
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="icon" href="icon.svg" type="image/svg+xml" />
+<style>
+  :root{
+    --bg:#0f1115; --bg2:#14171e; --panel:#171b23; --card:#1c212b;
+    --ink:#f3f4f7; --ink-soft:#9aa1ad; --line:rgba(255,255,255,.08);
+    --accent:#FF8A5B; --accent-soft:#3a2418;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+    background:radial-gradient(120% 80% at 50% -10%, #1a1f29 0%, var(--bg) 55%);
+    color:var(--ink); min-height:100vh; min-height:100dvh;
+    display:flex; flex-direction:column;
+  }
+  /* 顶栏 */
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 18px; padding-top:calc(14px + env(safe-area-inset-top));
+  }
+  .brand{font-weight:800; letter-spacing:.5px; font-size:16px; display:flex; align-items:center; gap:7px;}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent);}
+  .topbtn{
+    background:var(--panel); border:1px solid var(--line); color:var(--ink-soft);
+    border-radius:999px; padding:7px 13px; font-size:13px; cursor:pointer; display:flex; align-items:center; gap:6px;
+  }
+  .topbtn:active{transform:scale(.96);}
+  .badge{background:var(--accent); color:#1a1206; font-size:11px; font-weight:800; border-radius:999px; min-width:18px; height:18px; display:inline-flex; align-items:center; justify-content:center; padding:0 5px;}
+
+  /* 首页 hero */
+  .hero{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:0 22px 40px; text-align:center; transition:padding .4s, transform .4s;}
+  .hero.shrink{flex:0 0 auto; padding-top:6px; padding-bottom:12px; justify-content:flex-start; transform:none;}
+  .hero-title{font-size:46px; font-weight:900; letter-spacing:2px; margin:0 0 8px;
+    background:linear-gradient(120deg,#FFB98A,#FF8A5B 40%,#E6728F 90%); -webkit-background-clip:text; background-clip:text; color:transparent;}
+  .hero-sub{color:var(--ink-soft); font-size:14px; margin:0 0 30px; line-height:1.6;}
+
+  .search{
+    width:100%; max-width:520px; display:flex; align-items:center; gap:8px;
+    background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:6px 6px 6px 18px;
+    box-shadow:0 10px 40px rgba(0,0,0,.35); transition:border-color .25s, box-shadow .25s;
+  }
+  .search:focus-within{border-color:var(--accent); box-shadow:0 10px 50px rgba(255,138,91,.18);}
+  .search input{flex:1; background:transparent; border:none; outline:none; color:var(--ink); font-size:17px; padding:12px 0;}
+  .search input::placeholder{color:#5b626e;}
+  .search button{
+    background:linear-gradient(135deg,var(--accent),#E6728F); color:#1a1206; border:none;
+    width:46px; height:46px; border-radius:13px; font-size:19px; cursor:pointer; flex:none;
+  }
+  .search button:active{transform:scale(.94);}
+
+  .quick{margin-top:22px; display:flex; flex-wrap:wrap; gap:9px; justify-content:center; max-width:560px;}
+  .chip{background:var(--card); border:1px solid var(--line); color:var(--ink-soft); border-radius:999px; padding:8px 14px; font-size:13px; cursor:pointer;}
+  .chip:active{transform:scale(.95);}
+  .chip.daily{border-color:rgba(255,138,91,.4); color:var(--accent); background:linear-gradient(135deg,rgba(255,138,91,.10),rgba(230,114,143,.10));}
+  .chip.daily.rolling{animation:shake .35s ease-out;}
+  @keyframes shake{0%,100%{transform:rotate(0);} 20%{transform:rotate(-6deg) scale(1.06);} 40%{transform:rotate(5deg) scale(1.06);} 60%{transform:rotate(-3deg) scale(1.04);} 80%{transform:rotate(2deg);}}
+
+  /* 结果区 */
+  .result{width:100%; max-width:560px; margin:0 auto; padding:6px 18px calc(40px + env(safe-area-inset-bottom)); display:none;}
+  .result.show{display:block;}
+  .back{background:none; border:none; color:var(--ink-soft); font-size:13px; cursor:pointer; padding:6px 0 14px; display:flex; align-items:center; gap:5px;}
+  .card{
+    background:var(--card); border:1px solid var(--line); border-radius:22px; padding:26px 24px 20px;
+    position:relative; overflow:hidden; animation:cardIn .5s cubic-bezier(.2,.85,.25,1) both;
+  }
+  .card::before{content:""; position:absolute; left:0; top:0; bottom:0; width:5px; background:var(--accent);}
+  .card .term{font-size:34px; font-weight:900; margin:0 0 4px; letter-spacing:1px;}
+  .card .pos{display:inline-block; font-size:12px; color:var(--accent); border:1px solid var(--accent); border-radius:999px; padding:2px 10px; margin-bottom:14px;}
+  .card .def{font-size:17px; line-height:1.85; color:var(--ink);}
+  .card .ext{margin-top:16px; padding-top:14px; border-top:1px dashed var(--line); font-size:14.5px; line-height:1.8; color:var(--ink-soft);}
+  .card .ext .lab{display:inline-block; font-size:11px; color:var(--accent); border:1px solid var(--accent); border-radius:6px; padding:1px 7px; margin-right:8px; margin-bottom:6px; vertical-align:middle;}
+  .card .src{margin-top:14px; font-size:11px; color:#5b626e;}
+  .actions{display:flex; gap:9px; flex-wrap:wrap; margin-top:18px;}
+  .act{flex:1; min-width:96px; background:var(--panel); border:1px solid var(--line); color:var(--ink); border-radius:13px; padding:12px 8px; font-size:13.5px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;}
+  .act:active{transform:scale(.96);}
+  .act.primary{background:linear-gradient(135deg,var(--accent),#E6728F); color:#1a1206; border-color:transparent; font-weight:700;}
+  .act.saved{color:var(--accent); border-color:var(--accent);}
+
+  .toast{position:fixed; left:50%; bottom:calc(28px + env(safe-area-inset-bottom)); transform:translateX(-50%) translateY(20px);
+    background:#000; color:#fff; padding:11px 18px; border-radius:12px; font-size:13.5px; opacity:0; pointer-events:none; transition:.3s; z-index:50;}
+  .toast.show{opacity:.94; transform:translateX(-50%) translateY(0);}
+
+  /* 小烟花背景层（在内容之上、mask 之下，不挡阅读） */
+  #sparkle{position:fixed; inset:0; width:100vw; height:100vh; pointer-events:none; z-index:20; opacity:.55;}
+  .mask{z-index:40;}
+  .toast{z-index:60;}
+
+  /* 弹层 */
+  .mask{position:fixed; inset:0; background:rgba(0,0,0,.62); backdrop-filter:blur(4px); display:none; align-items:flex-end; justify-content:center; z-index:40; padding:0;}
+  .mask.show{display:flex; animation:fade .25s both;}
+  .sheet{background:var(--bg2); width:100%; max-width:560px; border-radius:22px 22px 0 0; padding:22px 20px calc(24px + env(safe-area-inset-bottom)); max-height:88vh; overflow:auto;}
+  .sheet h3{margin:0 0 4px; font-size:17px;}
+  .sheet .sub{color:var(--ink-soft); font-size:13px; margin:0 0 16px; line-height:1.65;}
+  .sheet .close{position:absolute; top:16px; right:18px; background:none; border:none; color:var(--ink-soft); font-size:22px; cursor:pointer;}
+  .sheet-wrap{position:relative;}
+  .btn{display:block; width:100%; box-sizing:border-box; background:var(--panel); border:1px solid var(--line); color:var(--ink); border-radius:13px; padding:13px; font-size:15px; cursor:pointer; margin-top:10px; text-align:center; text-decoration:none;}
+  .btn.primary{background:linear-gradient(135deg,var(--accent),#E6728F); color:#1a1206; border:none; font-weight:700;}
+  .btn:active{transform:scale(.98);}
+
+  #cardImg{width:100%; border-radius:14px; margin-top:8px; border:1px solid var(--line); background:#fff;}
+  .subtxt{font-size:12.5px; color:var(--ink-soft); line-height:1.7; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:12px 14px; white-space:pre-wrap; word-break:break-all; margin-top:6px;}
+
+  /* 收藏列表 */
+  .fav-list{display:flex; flex-direction:column; gap:10px; margin-top:6px;}
+  .fav-item{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:13px 15px; display:flex; align-items:center; gap:12px; cursor:pointer;}
+  .fav-item .ft{font-size:17px; font-weight:800; min-width:64px;}
+  .fav-item .fd{font-size:12.5px; color:var(--ink-soft); flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .fav-item .del{background:none; border:none; color:#e06a6a; font-size:18px; cursor:pointer; padding:4px;}
+  .empty{color:var(--ink-soft); font-size:13.5px; text-align:center; padding:30px 0; line-height:1.8;}
+
+  .foot{text-align:center; color:#4b525e; font-size:11.5px; padding:14px; padding-bottom:calc(14px + env(safe-area-inset-bottom));}
+
+  @keyframes cardIn{from{opacity:0; transform:translateY(18px) scale(.97);} to{opacity:1; transform:none;}}
+  @keyframes fade{from{opacity:0;} to{opacity:1;}}
+  .spin{display:inline-block; width:17px; height:17px; border:2px solid rgba(255,255,255,.25); border-top-color:var(--accent); border-radius:50%; animation:rot .7s linear infinite; vertical-align:-3px;}
+  @keyframes rot{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+
+<canvas id="sparkle" aria-hidden="true"></canvas>
+
+  <div class="topbar">
+    <div class="brand"><span class="dot"></span>胡思辞典</div>
+    <div style="display:flex;gap:8px;">
+      <button class="topbtn" id="submitOpen">✉️ 投稿</button>
+      <button class="topbtn" id="favOpen">⭐ 收藏 <span class="badge" id="favCount">0</span></button>
+    </div>
+  </div>
+
+  <main class="hero" id="hero">
+    <h1 class="hero-title">胡思辞典</h1>
+    <p class="hero-sub">搜一个词，看看它「本该」是什么样子<br/>离谱，但合理</p>
+    <form class="search" id="searchForm" autocomplete="off">
+      <input id="searchInput" placeholder="比如：咖啡、拖延、地铁上的陌生人…" />
+      <button type="submit" aria-label="搜索">🔍</button>
+    </form>
+    <div class="quick" id="quick">
+      <button class="chip" data-w="咖啡">咖啡</button>
+      <button class="chip" data-w="拖延">拖延</button>
+      <button class="chip" data-w="家">家</button>
+      <button class="chip" data-w="孤独">孤独</button>
+      <button class="chip" data-w="人工智能">人工智能</button>
+      <button class="chip daily" id="dailyChip">🎲 抽个胡思</button>
+    </div>
+  </main>
+
+  <section class="result" id="result">
+    <button class="back" id="backBtn">← 再搜一个</button>
+    <div id="cardHost"></div>
+  </section>
+
+  <div class="foot">胡思辞典 · 一个公开的脑洞玩具</div>
+
+  <!-- 存相册弹层 -->
+  <div class="mask" id="imgMask">
+    <div class="sheet sheet-wrap">
+      <button class="close" data-close="imgMask">✕</button>
+      <h3>保存到相册</h3>
+      <p class="sub">手机：长按下方图片 → 选择「存储到相册」。电脑：点下面的下载按钮。</p>
+      <img id="cardImg" alt="胡思词卡" />
+      <a class="btn primary" id="imgDownload" download="胡思词卡.png">⬇ 下载图片</a>
+      <button class="btn" data-close="imgMask">关闭</button>
+    </div>
+  </div>
+
+  <!-- 投稿弹层：引导用户打开小红书，一起编辞典 or 聊胡思乱想 -->
+  <div class="mask" id="submitMask">
+    <div class="sheet sheet-wrap">
+      <button class="close" data-close="submitMask">✕</button>
+      <h3>投稿 · 一起编写辞典 ✉️</h3>
+      <p class="sub">想一起编写辞典、或者想和我聊聊那些「胡思乱想」——<br/>点下方打开小红书，发条消息给我就行～</p>
+      <a class="btn primary" id="openXhs" href="#" target="_blank" rel="noopener">直接和作者聊聊</a>
+      <button class="btn" data-close="submitMask">稍后再说</button>
+    </div>
+  </div>
+
+  <!-- 我的收藏弹层 -->
+  <div class="mask" id="favMask">
+    <div class="sheet sheet-wrap">
+      <button class="close" data-close="favMask">✕</button>
+      <h3>我的收藏 <span class="badge" id="favCount2" style="margin-left:6px">0</span></h3>
+      <p class="sub">收藏只存在这台手机上，缓存不清就不会丢。下方可导出备份、换设备也不怕。</p>
+      <div class="fav-list" id="favList"></div>
+      <div class="empty" id="favEmpty" hidden>还没有收藏。搜到一个对味的词，点「⭐ 收藏」就行。</div>
+      <button class="btn" id="exportFav">导出备份（JSON）</button>
+      <button class="btn" id="importFav">导入备份</button>
+      <input type="file" id="importFile" accept="application/json" hidden />
+      <button class="btn" data-close="favMask">关闭</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script src="dict.js"></script>
+<script>
+/* ============ 配置 ============ */
+// 小红书主页链接：把下方 XHS_URL 换成你的真实短链/主页即可精确唤起。
+const XHS_HANDLE = "撕纸毕加索";
+const XHS_URL    = "https://xhslink.cn/o/7s6Fe1hRVeg";   // 留空：用搜索结果页兜底；填了则直接跳主页
+
+const OWNER_KEY   = "sk-cde10a22210d495fb63848d27b384cff";
+const OWNER_BASE  = "https://api.deepseek.com/v1";
+const OWNER_MODEL = "deepseek-chat";
+// 后台云端词库地址（后台增删内置词条后，主站会从这里自动同步新词条）
+const DICT_REMOTE = "https://husi-d0gzi7winfcad405e-1462114755.ap-shanghai.app.tcloudbase.com/api/dict-full";
+
+/* ============ 工具 ============ */
+function normalize(raw){
+  let s = (raw||"").trim().replace(/\s+/g,"");
+  s = s.replace(/[？?。.，,.！!~～]/g,"");
+  s = s.replace(/^(什么是|什么叫|查一下|查询|解释一下|解释|说说|告诉我|请问|我想知道)/,"");
+  return s;
+}
+function accentFor(str){
+  const palette = [["#FF8A5B","#3a2418"],["#F2A93B","#3a3012"],["#5FAE8C","#16302a"],["#5B9CC9","#16303a"],["#9B7FC9","#2a1f3a"],["#E6728F","#3a1622"]];
+  let h=0; const s=String(str||"");
+  for(let i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))>>>0;
+  return palette[h%palette.length];
+}
+function getExt(word){
+  const w = normalize(word);
+  return EXT[w] || "";
+}
+// 抽卡：每次随机出一个内置词，且不和上次重复
+let _lastDaily = null;
+function dailyWord(){
+  const keys = Object.keys(BUILTIN);
+  if(keys.length < 2) return keys[0];
+  let k;
+  // 最多重试 8 次仍撞到上次就放弃（词库太少时的兜底）
+  for(let i=0; i<8; i++){
+    k = keys[Math.floor(Math.random() * keys.length)];
+    if(k !== _lastDaily){ _lastDaily = k; return k; }
+  }
+  _lastDaily = k; return k;
+}
+function parseEntry(text){
+  let t=text||"";
+  const bi=t.indexOf("【"); if(bi>0) t=t.slice(bi);
+  const m=t.match(/^【(.+?)】，?(.*)$/s);
+  if(m) return {pos:m[1], def:m[2]};
+  return {pos:"名词", def:text};
+}
+function escapeHtml(s){return (s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+
+/* ============ 收藏（本地，客户端式持久化）============ */
+const LS_FAV = "husi_fav_v2";
+let fav = (function(){ try{ return JSON.parse(localStorage.getItem(LS_FAV)||"[]"); }catch(e){ return []; } })();
+function persistFav(){ localStorage.setItem(LS_FAV, JSON.stringify(fav)); }
+function isFav(w){ return fav.some(x=>x.word===w); }
+function getExt(word){ return EXT[normalize(word)] || ""; }
+function accentFor(str){
+  const palette = [
+    ["#FF8A5B","#FFE9DD"],
+    ["#F2A93B","#FCEFD6"],
+    ["#5FAE8C","#DCEFE5"],
+    ["#5B9CC9","#DCEBF5"],
+    ["#9B7FC9","#ECE3F6"],
+    ["#E6728F","#FBE0E7"]
+  ];
+  let h=0;
+  const s=String(str||"");
+  for(let i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))>>>0;
+  return palette[h%palette.length];
+}
+function isFav(word){ return fav.some(x=>x.word===normalize(word)); }
+function toggleFav(word, text, ext){
+  const w=normalize(word);
+  const i=fav.findIndex(x=>x.word===w);
+  if(i>=0){ fav.splice(i,1); toast("已取消收藏"); }
+  else { fav.unshift({word:w, text, ext:ext||""}); toast("⭐ 已收藏，存在这台手机上"); }
+  persistFav(); refreshFavBadge();
+}
+function refreshFavBadge(){
+  const n=fav.length;
+  favCount.textContent=n; favCount2.textContent=n;
+  favCount.style.display = n? "inline-flex":"none";
+}
+
+/* ============ AI 生成 ============ */
+async function generateWithAI(word, existingEntry){
+  const sys = PERSONA + "\n\n以下是《胡思辞典》的风格范例，请严格模仿其语气、尺度与\"离谱却合理\"的写法：\n" + FEWSHOT;
+  const hasEntry = !!existingEntry;
+  const userContent = hasEntry
+    ? `《胡思辞典》中「${word}」的释义是：${existingEntry}
+请只写一段「乱想Time」式延展——俏皮、略带荒谬，但符合当代人类的所见与认知。
+要求：①格式灵活多变，严禁固定用「之所以…是因为…」句式；②若是专有名词（影视/小说/动漫/游戏/历史人物/品牌/网络流行语），延展必须**先贴大众公知**（它是什么作品/品牌、有什么标志元素/角色/台词），再发散——绝不凭空捏造与公众认知冲突的背景；③先立住该词真实本质再发散；④只输出这段延展文字本身，不要前后缀。`
+    : `请为「${word}」编写一条《胡思辞典》风格的释义，并附一段「乱想Time」延展。
+要求：①先抓住它真实、独有、可被验证的本质特征（若是专有名词——影视/小说/动漫/游戏/历史人物/品牌/网络流行语——必须先贴大众公知常识：它是什么作品/品牌/领域、有哪些标志元素/角色/台词，再做胡思），再用离谱却贴切、画面感强的比喻讲出来；②必须是「${word}」专属的，换词不成立，绝不凭空捏造与公众认知冲突的背景；③格式严格为「【词性】，释义」；④换行另起一段写「⟨胡思延展⟩」+ 延展段；⑤只输出以上内容。`;
+  const res = await fetch(OWNER_BASE+"/chat/completions",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","Authorization":"Bearer "+OWNER_KEY},
+    body:JSON.stringify({model:OWNER_MODEL, messages:[{role:"system",content:sys},{role:"user",content:userContent}], temperature:0.95})
+  });
+  if(!res.ok) throw new Error("HTTP "+res.status);
+  const content = (await res.json()).choices?.[0]?.message?.content || "";
+  let entry=hasEntry?existingEntry:content, ext="";
+  const idx=content.indexOf("⟨胡思延展⟩");
+  if(idx>=0){ if(!hasEntry) entry=content.slice(0,idx).trim(); ext=content.slice(idx+6).trim(); }
+  else if(hasEntry){ ext=content; }
+  return {entry, ext};
+}
+
+/* ============ 渲染词卡 ============ */
+function cardHTML(word, text, ext, src){
+  const {pos, def} = parseEntry(text);
+  const ac = accentFor(word);
+  const faved = isFav(word);
+  return `<div class="card" style="--accent:${ac[0]};--accent-soft:${ac[1]}">
+    <div class="term">${escapeHtml(word)}</div>
+    <div class="pos">【${escapeHtml(pos)}】</div>
+    <div class="def">${escapeHtml(def)}</div>
+    ${ext?`<div class="ext"><span class="lab">乱想Time</span>${escapeHtml(ext)}</div>`:""}
+    <div class="src">${src==="ai"?"✨ AI 即兴编纂":src==="fav"?"⭐ 你的收藏":"《胡思辞典》内置"}</div>
+    <div class="actions">
+      <button class="act" data-act="album">📥 存相册</button>
+      <button class="act ${faved?"saved":""}" data-act="fav">${faved?"⭐ 已收藏":"⭐ 收藏"}</button>
+      <button class="act primary" data-act="polish">✨ 润色</button>
+    </div>
+  </div>`;
+}
+
+let current = null; // {word, text, ext}
+function renderCard(word, text, ext, src){
+  current = {word, text, ext:ext||""};
+  hero.classList.add("shrink");
+  result.classList.add("show");
+  result.scrollIntoView({behavior:"smooth", block:"start"});
+  cardHost.innerHTML = cardHTML(word, text, ext, src);
+  bindCard();
+}
+function bindCard(){
+  cardHost.querySelector(".card").addEventListener("click", e=>{
+    const b=e.target.closest("[data-act]"); if(!b) return;
+    const act=b.dataset.act;
+    if(act==="album") saveToAlbum(current.word, current.text, current.ext);
+    else if(act==="fav"){ toggleFav(current.word, current.text, current.ext); renderCard(current.word, current.text, current.ext, current.src||"fav"); }
+    else if(act==="polish") doPolish();
+  });
+}
+
+async function doPolish(){
+  if(!current) return;
+  toast("AI 正在换个角度想想…");
+  try{
+    const r = await generateWithAI(current.word, current.text);
+    // 润色：用 AI 产出的延展段刷新（有延展则替换，没有则整条替换释义）
+    let text=current.text, ext=current.ext;
+    if(r.ext) ext=r.ext;
+    if(!r.ext && r.entry) text=r.entry;
+    renderCard(current.word, text, ext, "ai");
+    toast("✨ 换个角度，有意思吧");
+  }catch(e){ toast("润色失败了，网络不太行"); }
+}
+
+/* ============ 搜索主流程 ============ */
+async function doSearch(raw){
+  const word = normalize(raw);
+  if(!word) return;
+  searchInput.blur();
+  // 先占位 loading
+  hero.classList.add("shrink");
+  result.classList.add("show");
+  cardHost.innerHTML = `<div class="card" style="--accent:#FF8A5B;--accent-soft:#3a2418;text-align:center;color:var(--ink-soft)"><span class="spin"></span> 正在翻《胡思辞典》…</div>`;
+  result.scrollIntoView({behavior:"smooth", block:"start"});
+
+  let text=null, ext=getExt(word), src="builtin";
+  if(BUILTIN[word]){ text=BUILTIN[word]; }
+  else {
+    const f=fav.find(x=>x.word===word);
+    if(f){ text=f.text; ext=f.ext; src="fav"; }
+  }
+  if(!text){
+    try{
+      const r=await generateWithAI(word, null);
+      text=r.entry; ext=r.ext; src="ai";
+    }catch(e){
+      text="【名词】，一个暂时还没被《胡思辞典》收编的词——你输入了它，它今天就归你定义了。";
+      ext=""; src="builtin";
+    }
+  }
+  renderCard(word, text, ext, src);
+}
+
+/* ============ 存相册（canvas 绘制）============ */
+function wrapText(ctx, text, x, y, maxW, lh){
+  const chars=String(text).split("");
+  let line="", yy=y;
+  for(let i=0;i<chars.length;i++){
+    const test=line+chars[i];
+    if(ctx.measureText(test).width>maxW && line){ ctx.fillText(line,x,yy); line=chars[i]; yy+=lh; }
+    else line=test;
+  }
+  if(line) ctx.fillText(line,x,yy);
+  return yy+lh;
+}
+function drawCard(word, text, ext){
+  const dpr=2, W=1080, pad=72;
+  const def = parseEntry(text).def;
+  const pos = parseEntry(text).pos;
+  const ac = accentFor(word);
+  // 预估高度
+  const tmp=document.createElement("canvas").getContext("2d");
+  tmp.font="32px -apple-system,'PingFang SC','Microsoft YaHei',sans-serif";
+  let lines=0; const maxW=W-pad*2-20;
+  const seg=def+ (ext?("\n\n"+ext):"");
+  seg.split("\n").forEach(para=>{
+    const cs=para.split(""); let line="";
+    for(let i=0;i<cs.length;i++){ const t=line+cs[i]; if(tmp.measureText(t).width>maxW&&line){lines++;line=cs[i];} else line=t; }
+    if(line) lines++;
+  });
+  const H = 360 + lines*50 + 80;
+  const cv=document.createElement("canvas"); cv.width=W*dpr; cv.height=H*dpr;
+  const ctx=cv.getContext("2d"); ctx.scale(dpr,dpr);
+  // 背景
+  const g=ctx.createLinearGradient(0,0,W,H);
+  g.addColorStop(0,"#14171e"); g.addColorStop(1,"#0f1115");
+  ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+  // 卡片
+  const cx=44, cy=44, cw=W-88, ch=H-88;
+  roundRect(ctx,cx,cy,cw,ch,36); ctx.fillStyle="#1c212b"; ctx.fill();
+  // 左侧强调条
+  ctx.fillStyle=ac[0]; roundRect(ctx,cx,cy,10,ch,10); ctx.fill();
+  // 词
+  ctx.fillStyle="#f3f4f7"; ctx.textBaseline="top";
+  ctx.font="900 76px -apple-system,'PingFang SC','Microsoft YaHei',sans-serif";
+  ctx.fillText(word, cx+pad-10, cy+pad-6);
+  // 词性
+  ctx.font="28px -apple-system,'PingFang SC','Microsoft YaHei',sans-serif";
+  ctx.fillStyle=ac[0]; ctx.fillText("【"+pos+"】", cx+pad-10, cy+pad+92);
+  // 释义
+  let y=cy+pad+150;
+  ctx.font="34px -apple-system,'PingFang SC','Microsoft YaHei',sans-serif"; ctx.fillStyle="#f3f4f7";
+  y=wrapText(ctx, def, cx+pad-10, y, cw-pad*2+20, 50);
+  if(ext){
+    y+=24; ctx.fillStyle=ac[0]; ctx.font="24px -apple-system,'PingFang SC',sans-serif";
+    ctx.fillText("⟨ 乱想Time ⟩", cx+pad-10, y); y+=44;
+    ctx.fillStyle="#9aa1ad"; ctx.font="28px -apple-system,'PingFang SC','Microsoft YaHei',sans-serif";
+    y=wrapText(ctx, ext, cx+pad-10, y, cw-pad*2+20, 44);
+  }
+  // 角标
+  ctx.fillStyle="#5b626e"; ctx.font="24px -apple-system,'PingFang SC',sans-serif";
+  ctx.fillText("胡思辞典", cx+pad-10, H-cy-pad-10);
+  return cv.toDataURL("image/png");
+}
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath(); ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
+}
+function saveToAlbum(word, text, ext){
+  const url=drawCard(word, text, ext);
+  cardImg.src=url; imgDownload.href=url; imgMask.classList.add("show");
+}
+
+/* ============ 投稿 → 打开小红书 ============ */
+function openSubmit(){
+  // XHS_URL 已是完整短链/主页链接（推荐短链，App/网页都能识别）；
+  // 留空时用「搜索你账号名」兜底
+  const url = XHS_URL
+    ? XHS_URL
+    : `https://www.xiaohongshu.com/search/result?keyword=${encodeURIComponent(XHS_HANDLE)}`;
+  document.getElementById("openXhs").href = url;
+  submitMask.classList.add("show");
+}
+
+/* ============ 收藏面板 ============ */
+function renderFavList(){
+  refreshFavBadge();
+  if(!fav.length){ favList.innerHTML=""; favEmpty.hidden=false; return; }
+  favEmpty.hidden=true;
+  favList.innerHTML = fav.map((x,i)=>`
+    <div class="fav-item" data-i="${i}">
+      <div class="ft">${escapeHtml(x.word)}</div>
+      <div class="fd">${escapeHtml((parseEntry(x.text).def||"").slice(0,20))}</div>
+      <button class="del" data-del="${i}" title="删除">🗑</button>
+    </div>`).join("");
+  favList.querySelectorAll(".fav-item").forEach(el=>{
+    el.addEventListener("click", e=>{
+      if(e.target.closest("[data-del]")) return;
+      const x=fav[+el.dataset.i];
+      favMask.classList.remove("show");
+      renderCard(x.word, x.text, x.ext, "fav");
+    });
+  });
+  favList.querySelectorAll("[data-del]").forEach(b=>{
+    b.addEventListener("click", e=>{ e.stopPropagation(); const i=+b.dataset.del; fav.splice(i,1); persistFav(); renderFavList(); });
+  });
+}
+/* ============ DOM 引用（必须先于任何 addEventListener）============ */
+const searchForm = document.getElementById("searchForm");
+const searchInput = document.getElementById("searchInput");
+const importFile  = document.getElementById("importFile");
+const toastEl     = document.getElementById("toast");
+
+document.getElementById("exportFav").addEventListener("click", ()=>{
+  const blob=new Blob([JSON.stringify(fav,null,2)],{type:"application/json"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="胡思收藏备份.json"; a.click();
+  toast("已导出备份");
+});
+document.getElementById("importFav").addEventListener("click", ()=>importFile.click());
+importFile.addEventListener("change", e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{ try{ const arr=JSON.parse(r.result); if(Array.isArray(arr)){ fav=arr; persistFav(); renderFavList(); toast("已导入 "+arr.length+" 条"); } }catch(err){ toast("备份文件读不懂"); } };
+  r.readAsText(f);
+});
+
+/* ============ 事件绑定 ============ */
+const hero=document.getElementById("hero");
+const result=document.getElementById("result");
+const cardHost=document.getElementById("cardHost");
+const favCount=document.getElementById("favCount");
+const favCount2=document.getElementById("favCount2");
+const favList=document.getElementById("favList");
+const favEmpty=document.getElementById("favEmpty");
+const imgMask=document.getElementById("imgMask");
+const cardImg=document.getElementById("cardImg");
+const imgDownload=document.getElementById("imgDownload");
+const submitMask=document.getElementById("submitMask");
+const favMask=document.getElementById("favMask");
+
+searchForm.addEventListener("submit", e=>{ e.preventDefault(); doSearch(searchInput.value); });
+document.getElementById("quick").addEventListener("click", e=>{
+  const b=e.target.closest("button[data-w]"); if(b) doSearch(b.dataset.w);
+});
+document.getElementById("dailyChip").addEventListener("click", e=>{
+  const chip = e.currentTarget;
+  // 摇一摇 + 闪一下 → 揭晓
+  chip.classList.remove("rolling"); void chip.offsetWidth; chip.classList.add("rolling");
+  setTimeout(()=>doSearch(dailyWord()), 220);
+});
+document.getElementById("backBtn").addEventListener("click", ()=>{ result.classList.remove("show"); hero.classList.remove("shrink"); searchInput.focus(); });
+document.getElementById("favOpen").addEventListener("click", ()=>{ renderFavList(); favMask.classList.add("show"); });
+document.querySelectorAll("[data-close]").forEach(b=>b.addEventListener("click", ()=>document.getElementById(b.dataset.close).classList.remove("show")));
+[imgMask,submitMask,favMask].forEach(m=>m.addEventListener("click", e=>{ if(e.target===m) m.classList.remove("show"); }));
+
+/* ============ 启动时从云端后台 merge 新词条 ============ */
+async function mergeBuiltinFromCloud(){
+  try{
+    const r = await fetch(DICT_REMOTE, { cache: "no-store" });
+    if(!r.ok) return;
+    const data = await r.json();
+    if(!data || !data.entries) return;
+    let added=0;
+    for(const k in data.entries){
+      if(!BUILTIN[k]) added++;            // 仅追加后台新增的词；已存在的优先保留内置（避免远程误覆盖）
+      BUILTIN[k] = data.entries[k];
+    }
+    if(typeof EXT !== "undefined" && data.exts){
+      for(const k in data.exts) EXT[k] = data.exts[k];
+    }
+    if(added>0) console.log("胡思辞典：从后台 merge 新词条", added, "个");
+  }catch(e){ /* 静默失败，本地内置词典已够用 */ }
+}
+mergeBuiltinFromCloud();
+
+let toastT; function toast(msg){ toastEl.textContent=msg; toastEl.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(()=>toastEl.classList.remove("show"),1900); }
+
+refreshFavBadge();
+document.getElementById("submitOpen").addEventListener("click", openSubmit);
+
+/* PWA */
+if("serviceWorker" in navigator){ window.addEventListener("load", ()=>navigator.serviceWorker.register("./sw.js").catch(()=>{})); }
+
+/* ============ 背景小烟花 ============ */
+(function(){
+  const cv=document.getElementById("sparkle"); if(!cv) return;
+  const ctx=cv.getContext("2d");
+  let particles=[];
+  function resize(){ cv.width=innerWidth*devicePixelRatio; cv.height=innerHeight*devicePixelRatio; ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0); }
+  addEventListener("resize",resize); resize();
+  function fire(){
+    // 烟花中心：上半屏随机位置（避免遮住主要操作区）
+    const x=Math.random()*innerWidth*0.9+innerWidth*0.05;
+    const y=Math.random()*innerHeight*0.55+innerHeight*0.05;
+    const n=7+Math.floor(Math.random()*5);
+    for(let i=0;i<n;i++){
+      const a=(i/n)*Math.PI*2+Math.random()*0.5;
+      const v=0.4+Math.random()*0.9;
+      particles.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:0,max:50+Math.random()*40,r:0.8+Math.random()*1.2});
+    }
+  }
+  // 三颗若隐若现：每 1.4-2.4s 放一颗
+  function schedule(){ const t=1400+Math.random()*1000; setTimeout(()=>{ fire(); schedule(); },t); }
+  schedule();
+  function tick(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    for(let i=particles.length-1;i>=0;i--){
+      const p=particles[i], t=p.life/p.max;
+      const alpha=(1-t)*0.55;
+      ctx.fillStyle=`rgba(255,255,255,${alpha.toFixed(3)})`;
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill();
+      p.x+=p.vx; p.y+=p.vy; p.vy+=0.012; p.vx*=0.985; p.vy*=0.985; p.life++;
+      if(p.life>=p.max) particles.splice(i,1);
+    }
+    requestAnimationFrame(tick);
+  }
+  tick();
+})();
+</script>
+</body>
+</html>
