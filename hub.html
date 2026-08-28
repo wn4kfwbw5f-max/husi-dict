@@ -4,6 +4,8 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="theme-color" content="#0f1115" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="胡思辞典" />
 <title>胡思辞典 · 使用中枢</title>
 <style>
   :root{
@@ -35,6 +37,7 @@
   .tag.admin{background:rgba(230,114,143,.15);color:var(--accent2);border:1px solid rgba(230,114,143,.4);}
   .card .desc{color:var(--ink-soft);font-size:13px;line-height:1.75;margin-top:6px;}
   .card .link{color:var(--accent);font-size:12.5px;margin-top:10px;word-break:break-all;display:flex;align-items:center;gap:5px;}
+  .card .link .alt{color:#5b626e;font-size:11.5px;margin-left:8px;}
 
   .guide{margin-top:8px;}
   .guide h3{font-size:14px;font-weight:900;color:var(--ink);margin:22px 0 10px;display:flex;align-items:center;gap:6px;}
@@ -44,6 +47,8 @@
   .step b{color:var(--ink);font-weight:800;}
   .step .n{display:inline-flex;width:20px;height:20px;border-radius:50%;background:var(--accent);color:#1a1206;font-size:12px;font-weight:900;align-items:center;justify-content:center;margin-right:8px;vertical-align:1px;}
   .step .n2{background:var(--accent2);}
+  .warn{border-color:rgba(224,106,106,.4); background:rgba(224,106,106,.07);}
+  .warn .n{background:var(--accent2);}
   .foot{margin-top:26px;text-align:center;color:#5b626e;font-size:12px;line-height:1.8;}
 </style>
 </head>
@@ -58,20 +63,27 @@
     <div class="ico">📖</div>
     <h2>胡思辞典 · 主站 <span class="tag main">使用者</span></h2>
     <div class="desc">深色搜索引擎：搜任意词出胡思词卡，支持存相册 / 收藏 / AI 润色 / 抽卡。使用者在里面留言投稿。</div>
-    <div class="link">https://husidict.top →</div>
+    <div class="link">https://husidict.top → <span class="alt">打不开或很慢？用备用：707eb172194149b4a396eee865896ef4.app.workbuddy.link</span></div>
   </a>
 
-  <a class="card" href="https://6958fc30803841e0bd177be4781212f0.app.workbuddy.link" target="_blank">
+  <a class="card" href="https://husidict.top/admin-dict.html" target="_blank">
     <div class="ico">🛠️</div>
     <h2>胡思辞典 · 词条后台 <span class="tag admin">你自己</span></h2>
     <div class="desc">加词专用：填词 / 词性 / 释义，乱想Time 交给 AI。保存后主站刷新即同步。</div>
-    <div class="link">https://6958fc30803841e0bd177be4781212f0.app.workbuddy.link →</div>
+    <div class="link">https://husidict.top/admin-dict.html → <span class="alt">备用：6958fc30803841e0bd177be4781212f0.app.workbuddy.link</span></div>
   </a>
 
   <div class="guide">
+    <h3><span class="bar"></span>📲 装到手机桌面（像 App 一样）</h3>
+    <div class="steps">
+      <div class="step"><span class="n">1</span><b>iPhone</b>：用 <b>Safari</b> 打开 https://husidict.top → 底部分享按钮 → 「<b>添加到主屏幕</b>」→ 完成，桌面出现"胡思辞典"</div>
+      <div class="step"><span class="n">2</span><b>安卓</b>：用 <b>Chrome</b> 打开 https://husidict.top → 右上「<b>⋮</b>」→「<b>添加到主屏幕</b>」</div>
+      <div class="step warn"><span class="n2">⚠</span><b>不要用微信/QQ 内置浏览器</b>（没有"添加到主屏幕"）。从微信里打开时，点右上「···」→「<b>在浏览器中打开</b>」→ 再按上面步骤装</div>
+    </div>
+
     <h3><span class="bar"></span>📖 主站怎么用（使用者视角）</h3>
     <div class="steps">
-      <div class="step"><span class="n">1</span><b>搜词</b>：中央搜索框输入任意词回车 → 词卡滑入（内置 370+ 词秒出，冷门词 AI 即兴编）</div>
+      <div class="step"><span class="n">1</span><b>搜词</b>：中央搜索框输入任意词回车 → 词卡滑入（内置 420+ 词秒出，冷门词 AI 即兴编）</div>
       <div class="step"><span class="n">2</span><b>抽卡</b>：点「🎲 抽个胡思」→ 随机词卡，每次不同</div>
       <div class="step"><span class="n">3</span><b>存相册</b>：词卡点「📥 存相册」→ 生成图片 → 长按保存到手机</div>
       <div class="step"><span class="n">4</span><b>收藏</b>：点「⭐ 收藏」→ 存本地，右上角「⭐ 收藏」查看，可导出备份</div>
@@ -93,8 +105,8 @@
   </div>
 
   <div class="foot">
-    胡思辞典 · 搜索形态小工具<br/>
-    主站 / 后台均为测试预览链接，正式上架小红书前会更新
+    胡思辞典 · witlex<br/>
+    主站：https://husidict.top
   </div>
 </div>
 </body>

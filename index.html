@@ -61,6 +61,19 @@
   .search button:active{transform:scale(.94);}
 
   .quick{margin-top:22px; display:flex; flex-wrap:wrap; gap:9px; justify-content:center; max-width:560px;}
+  /* 今日胡思卡片 */
+  .today{
+    margin-top:14px; display:flex; align-items:center; gap:10px; width:100%; max-width:520px;
+    background:linear-gradient(135deg, rgba(255,138,91,.10), rgba(230,114,143,.10));
+    border:1px solid rgba(255,138,91,.32); border-radius:18px; padding:11px 16px;
+    cursor:pointer; transition:transform .15s, border-color .2s;
+  }
+  .today:hover{border-color:rgba(255,138,91,.55);}
+  .today:active{transform:scale(.98);}
+  .today-tag{font-size:11px;font-weight:900;color:#1a1206;background:linear-gradient(135deg,var(--accent),#E6728F);border-radius:999px;padding:3px 9px;flex:none;letter-spacing:.5px;}
+  .today-word{font-size:17px;font-weight:900;color:var(--ink);flex:1;text-align:left;}
+  .today-sub{font-size:12px;color:var(--ink-soft);flex:none;}
+  .today-arrow{color:var(--accent);font-size:15px;flex:none;}
   .chip{background:var(--card); border:1px solid var(--line); color:var(--ink-soft); border-radius:999px; padding:8px 14px; font-size:13px; cursor:pointer;}
   .chip:active{transform:scale(.95);}
   .chip.daily{border-color:rgba(255,138,91,.4); color:var(--accent); background:linear-gradient(135deg,rgba(255,138,91,.10),rgba(230,114,143,.10));}
@@ -155,6 +168,12 @@
       <button class="chip" data-w="人工智能">人工智能</button>
       <button class="chip daily" id="dailyChip">🎲 抽个胡思</button>
     </div>
+    <div class="today" id="todayCard" hidden>
+      <span class="today-tag">今日胡思</span>
+      <span class="today-word" id="todayWord">…</span>
+      <span class="today-sub">点一下搜它</span>
+      <span class="today-arrow">→</span>
+    </div>
   </main>
 
   <section class="result" id="result">
@@ -216,6 +235,52 @@ const OWNER_BASE  = "https://api.deepseek.com/v1";
 const OWNER_MODEL = "deepseek-chat";
 // 后台云端词库地址（后台增删内置词条后，主站会从这里自动同步新词条）
 const DICT_REMOTE = "https://husi-d0gzi7winfcad405e-1462114755.ap-shanghai.app.tcloudbase.com/api/dict-full";
+const API_BASE = "https://husi-d0gzi7winfcad405e-1462114755.ap-shanghai.app.tcloudbase.com";
+
+/* 匿名埋点（只记词+事件，不记个人；失败静默） */
+function track(event, word){
+  try{
+    fetch(API_BASE+"/api/track", {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ event, word })
+    }).catch(()=>{});
+  }catch(e){}
+}
+
+/* ============ 今日胡思（每日一词）============ */
+async function loadToday(){
+  try{
+    const card = document.getElementById("todayCard");
+    const wordEl = document.getElementById("todayWord");
+    if(!card || !wordEl) return;
+    let word = null;
+    // 1) 优先取后台设置的主题词（当日有效）
+    try{
+      const r = await fetch(API_BASE+"/api/daily", { cache:"no-store" });
+      const d = await r.json();
+      if(d && d.word) word = d.word;
+    }catch(e){}
+    // 2) 没有则按北京时间日期从合并词库选（每天固定：90% 两字以上，10% 日常单字池）
+    if(!word){
+      const allKeys = Object.keys(BUILTIN);
+      const keys = allKeys.filter(k => k.length >= 2);
+      if(!keys.length) return;
+      const t = new Date(Date.now()+8*3600*1000);
+      const dayStr = t.toISOString().slice(0,10);
+      let h = 0;
+      for(let i=0;i<dayStr.length;i++) h = (h*31 + dayStr.charCodeAt(i)) >>> 0;
+      // 10% 的日子从日常单字池选（当天固定），其余走两字以上池
+      if(h % 10 === 0 && DAILY_SINGLE.length){
+        word = DAILY_SINGLE[h % DAILY_SINGLE.length];
+      } else {
+        word = keys[h % keys.length];
+      }
+    }
+    wordEl.textContent = word;
+    card.hidden = false;
+  }catch(e){ /* 静默：不阻塞主站 */ }
+}
 
 /* ============ 工具 ============ */
 function normalize(raw){
@@ -236,13 +301,17 @@ function getExt(word){
 }
 // 抽卡：每次随机出一个内置词，且不和上次重复
 let _lastDaily = null;
+// 日常单字豁免池：低频出现在抽/今日（比例约 10%）。想加减字随时说。
+const DAILY_SINGLE = ["钱","命","手","脚","猫","狗","酒","梦","雨","雪","风","诗","床","胃","歌","茶"];
 function dailyWord(){
-  const keys = Object.keys(BUILTIN);
-  if(keys.length < 2) return keys[0];
+  // 90% 两字以上，10% 日常单字池
+  const keys = Object.keys(BUILTIN).filter(k => k.length >= 2);
+  const pool = (keys.length && Math.random() >= 0.1) ? keys : (DAILY_SINGLE.length ? DAILY_SINGLE : keys);
+  if(pool.length < 2) return pool[0];
   let k;
   // 最多重试 8 次仍撞到上次就放弃（词库太少时的兜底）
   for(let i=0; i<8; i++){
-    k = keys[Math.floor(Math.random() * keys.length)];
+    k = pool[Math.floor(Math.random() * pool.length)];
     if(k !== _lastDaily){ _lastDaily = k; return k; }
   }
   _lastDaily = k; return k;
@@ -281,7 +350,7 @@ function toggleFav(word, text, ext){
   const w=normalize(word);
   const i=fav.findIndex(x=>x.word===w);
   if(i>=0){ fav.splice(i,1); toast("已取消收藏"); }
-  else { fav.unshift({word:w, text, ext:ext||""}); toast("⭐ 已收藏，存在这台手机上"); }
+  else { fav.unshift({word:w, text, ext:ext||""}); toast("⭐ 已收藏，存在这台手机上"); track("fav", w); }
   persistFav(); refreshFavBadge();
 }
 function refreshFavBadge(){
@@ -370,6 +439,7 @@ async function doPolish(){
 async function doSearch(raw){
   const word = normalize(raw);
   if(!word) return;
+  track("search", word);
   searchInput.blur();
   // 先占位 loading
   hero.classList.add("shrink");
@@ -543,6 +613,11 @@ document.getElementById("dailyChip").addEventListener("click", e=>{
   chip.classList.remove("rolling"); void chip.offsetWidth; chip.classList.add("rolling");
   setTimeout(()=>doSearch(dailyWord()), 220);
 });
+const todayCard = document.getElementById("todayCard");
+if(todayCard) todayCard.addEventListener("click", ()=>{
+  const w = document.getElementById("todayWord").textContent;
+  if(w && w !== "…") doSearch(w);
+});
 document.getElementById("backBtn").addEventListener("click", ()=>{ result.classList.remove("show"); hero.classList.remove("shrink"); searchInput.focus(); });
 document.getElementById("favOpen").addEventListener("click", ()=>{ renderFavList(); favMask.classList.add("show"); });
 document.querySelectorAll("[data-close]").forEach(b=>b.addEventListener("click", ()=>document.getElementById(b.dataset.close).classList.remove("show")));
@@ -567,6 +642,7 @@ async function mergeBuiltinFromCloud(){
   }catch(e){ /* 静默失败，本地内置词典已够用 */ }
 }
 mergeBuiltinFromCloud();
+loadToday();
 
 let toastT; function toast(msg){ toastEl.textContent=msg; toastEl.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(()=>toastEl.classList.remove("show"),1900); }
 

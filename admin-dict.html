@@ -28,6 +28,13 @@
   .stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 16px;min-width:110px}
   .stat b{display:block;font-size:24px;font-weight:900;color:var(--accent)}
   .stat span{font-size:12px;color:var(--ink-soft)}
+  .ops{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 16px;margin-bottom:18px}
+  .op-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .op-lab{font-size:12px;color:var(--ink-soft);font-weight:800;flex:none}
+  .op-cur{font-size:12px;color:var(--ink-soft);margin-top:8px}
+  .tp{display:flex;justify-content:space-between;align-items:center;padding:7px 4px;border-bottom:1px solid var(--line);font-size:13.5px}
+  .tp span{color:var(--ink)}
+  .tp b{color:var(--accent);font-size:13px}
   .toolbar{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
   .btn{border:none;border-radius:12px;padding:10px 18px;font-weight:800;font-size:14px;cursor:pointer;
        background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1206;transition:.15s}
@@ -103,6 +110,24 @@
       <div class="stat"><b id="statCount">0</b><span>内置词条数</span></div>
       <div class="stat"><b id="statLast">—</b><span>最近更新</span></div>
     </div>
+
+    <!-- 运营：今日主题词位 -->
+    <div class="ops">
+      <div class="op-row">
+        <span class="op-lab">今日主题词</span>
+        <input id="dailyWordInput" class="searchbox" style="flex:1;min-width:140px" placeholder="输入词，设为今日胡思" />
+        <button class="btn" onclick="setDaily()" style="flex:none">设置</button>
+      </div>
+      <div class="op-cur" id="dailyCur">当前：自动</div>
+    </div>
+
+    <!-- 数据看板：埋点统计 -->
+    <div class="stats">
+      <div class="stat"><b id="statEvents">0</b><span>事件总数</span></div>
+      <div class="stat"><b id="statTop">—</b><span>最热搜索词</span></div>
+    </div>
+    <div class="list" id="topList" style="max-height:260px;overflow:auto"></div>
+
     <div class="toolbar">
       <button class="btn" onclick="openForm()">＋ 新增词条</button>
       <input id="searchBox" class="searchbox" placeholder="搜索词/释义/延展…" oninput="renderList()" />
@@ -149,6 +174,8 @@ if(token){
   document.getElementById("loginView").style.display = "none";
   document.getElementById("adminView").style.display = "block";
   loadList();
+  loadDaily();
+  loadStats();
 }else{
   document.getElementById("loginView").style.display = "block";
 }
@@ -161,6 +188,51 @@ function doLogin(){
   location.reload();
 }
 function logout(){ localStorage.removeItem(TOKEN_KEY); location.reload(); }
+
+/* ============ 今日主题词位 ============ */
+async function setDaily(){
+  const w = document.getElementById("dailyWordInput").value.trim();
+  if(!w){ toast("先输入要设为今日的词"); return; }
+  try{
+    const r = await fetch(API+"/api/daily?token="+encodeURIComponent(token), {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ word: w })
+    });
+    const j = await r.json();
+    if(j.ok){ toast("今日主题词已设为「"+w+"」"); loadDaily(); }
+    else toast("设置失败："+(j.error||"未知"));
+  }catch(e){ toast("网络异常："+e.message); }
+}
+async function loadDaily(){
+  try{
+    const r = await fetch(API+"/api/daily", { cache:"no-store" });
+    const j = await r.json();
+    document.getElementById("dailyCur").textContent = j && j.word ? "当前："+j.word : "当前：自动（未设主题词）";
+  }catch(e){}
+}
+
+/* ============ 数据看板（埋点统计）============ */
+async function loadStats(){
+  try{
+    const r = await fetch(API+"/api/stats?token="+encodeURIComponent(token));
+    const j = await r.json();
+    if(!j || j.error) return;
+    document.getElementById("statEvents").textContent = j.total||0;
+    const top = (j.top_words||[])[0];
+    document.getElementById("statTop").textContent = top ? (top.word+" ×"+top.n) : "—";
+    const tl = document.getElementById("topList");
+    const rows = (j.top_words||[]).slice(0,15).map(t=>{
+      const span = document.createElement("span"); span.textContent = t.word;
+      const b = document.createElement("b"); b.textContent = t.n;
+      const div = document.createElement("div"); div.className = "tp";
+      div.appendChild(span); div.appendChild(b);
+      return div;
+    });
+    tl.innerHTML = "";
+    if(rows.length) rows.forEach(r=>tl.appendChild(r));
+    else tl.innerHTML = '<div class="empty">还没有数据，用户搜词后这里会出现热词榜</div>';
+  }catch(e){}
+}
 
 /* ============ 列表加载 ============ */
 let allItems = [];
