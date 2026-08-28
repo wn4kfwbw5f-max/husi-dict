@@ -75,6 +75,50 @@
   .today-word:empty{min-width:60px;display:inline-block;}
   .today-sub{font-size:12px;color:var(--ink-soft);flex:none;}
   .today-arrow{color:var(--accent);font-size:15px;flex:none;}
+  /* 热词榜 */
+  .hot{margin-top:20px;width:100%;max-width:520px;}
+  .hot-title{font-size:12px;color:var(--ink-soft);margin-bottom:9px;letter-spacing:.5px;}
+
+  /* Panel 通用：默认显示 active 那个，hidden 隐藏 */
+  .panel{width:100%;max-width:560px;display:flex;flex-direction:column;align-items:center;padding:0 22px;margin-top:20px}
+  .panel[hidden]{display:none}
+  .panel-title{font-size:22px;font-weight:900;letter-spacing:1px;margin:0 0 4px;align-self:flex-start;
+    background:linear-gradient(120deg,#FFB98A,#FF8A5B 40%,#E6728F 90%);
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  .panel-sub{color:var(--ink-soft);font-size:14px;line-height:1.7;align-self:flex-start;margin:0 0 18px}
+  .panel-tip{color:#5b626e;font-size:12px;margin-top:18px;line-height:1.6;align-self:flex-start}
+  .btn{display:block;width:100%;border:none;border-radius:13px;padding:13px;font-size:15px;cursor:pointer;
+       background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1206;transition:.15s;font-weight:800;text-align:center;text-decoration:none}
+  .btn:hover{filter:brightness(1.06)}
+
+  /* 我的 tab 切换 */
+  .mine-tabs{display:flex;gap:6px;width:100%;margin-bottom:14px}
+  .mine-tab{flex:1;background:var(--card);border:1px solid var(--line);color:var(--ink-soft);
+    border-radius:11px;padding:9px 0;font-size:13.5px;cursor:pointer;font-weight:700}
+  .mine-tab.active{background:linear-gradient(135deg,rgba(255,138,91,.15),rgba(230,114,143,.15));color:var(--accent);border-color:rgba(255,138,91,.5)}
+  .mine-content{width:100%;min-height:140px;font-size:13.5px;color:var(--ink-soft);text-align:center;padding:24px 0}
+
+  /* 底部 Tab Bar（4 按钮） */
+  .tabbar{
+    position:fixed;left:0;right:0;bottom:0;z-index:50;
+    display:flex;justify-content:space-around;align-items:center;
+    background:rgba(15,17,21,.92);backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    border-top:1px solid rgba(255,255,255,.08);
+    padding:8px 6px calc(8px + env(safe-area-inset-bottom, 0px));
+  }
+  .tab{
+    flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;
+    background:transparent;border:none;color:#5b626e;
+    padding:6px 0;font-size:10px;cursor:pointer;font-weight:700;
+  }
+  .tab .tab-ico{font-size:20px;line-height:1}
+  .tab .tab-lab{font-size:10px;letter-spacing:.5px}
+  .tab.active{color:var(--accent)}
+  .tab.active .tab-ico{filter:drop-shadow(0 0 6px rgba(255,138,91,.5))}
+  /* 给 main 留底部空间，避免被 tabbar 遮挡 */
+  .hero, .result{padding-bottom:calc(80px + env(safe-area-inset-bottom, 0px))}
+  .hot-chips{display:flex;flex-wrap:wrap;gap:8px;}
   .chip{background:var(--card); border:1px solid var(--line); color:var(--ink-soft); border-radius:999px; padding:8px 14px; font-size:13px; cursor:pointer;}
   .chip:active{transform:scale(.95);}
   .chip.daily{border-color:rgba(255,138,91,.4); color:var(--accent); background:linear-gradient(135deg,rgba(255,138,91,.10),rgba(230,114,143,.10));}
@@ -86,10 +130,11 @@
   .result.show{display:block;}
   .back{background:none; border:none; color:var(--ink-soft); font-size:13px; cursor:pointer; padding:6px 0 14px; display:flex; align-items:center; gap:5px;}
   .card{
-    background:var(--card); border:1px solid var(--line); border-radius:22px; padding:26px 24px 20px;
+    background:var(--card); border:1px solid var(--line); border-radius:22px; padding:26px 24px 20px; text-align:left;
     position:relative; overflow:hidden; animation:cardIn .5s cubic-bezier(.2,.85,.25,1) both;
   }
   .card::before{content:""; position:absolute; left:0; top:0; bottom:0; width:5px; background:var(--accent);}
+  .card-close{position:absolute;top:12px;right:14px;background:none;border:0;color:var(--ink-soft);font-size:24px;line-height:1;cursor:pointer;padding:4px 8px}
   .card .term{font-size:34px; font-weight:900; margin:0 0 4px; letter-spacing:1px;}
   .card .pos{display:inline-block; font-size:12px; color:var(--accent); border:1px solid var(--accent); border-radius:999px; padding:2px 10px; margin-bottom:14px;}
   .card .def{font-size:17px; line-height:1.85; color:var(--ink);}
@@ -140,6 +185,118 @@
   @keyframes fade{from{opacity:0;} to{opacity:1;}}
   .spin{display:inline-block; width:17px; height:17px; border:2px solid rgba(255,255,255,.25); border-top-color:var(--accent); border-radius:50%; animation:rot .7s linear infinite; vertical-align:-3px;}
   @keyframes rot{to{transform:rotate(360deg);}}
+
+  /* 全民胡思榜（微博话题榜风格） */
+  .hotrank{width:100%;margin-top:22px}
+  .hotrank-head{display:flex;align-items:baseline;gap:8px;margin-bottom:10px}
+  .hotrank-title{font-size:15px;font-weight:900;color:var(--ink);letter-spacing:.5px}
+  .hotrank-sub{font-size:11px;color:var(--ink-soft)}
+  .hotrank-list{width:100%}
+  .hr-item{display:grid;grid-template-columns:34px minmax(0,1fr) auto;align-items:center;gap:10px;padding:12px 4px;border-bottom:1px solid var(--line);cursor:pointer;transition:background .15s}
+  .hr-item:active{background:rgba(255,255,255,.03)}
+  .hr-main{min-width:0;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .hr-rank{font-size:20px;font-weight:900;width:34px;text-align:center;flex:none;font-style:italic}
+  .hr-word{font-size:16.5px;font-weight:800;color:var(--ink);white-space:nowrap;text-align:left}
+  .hr-meta{display:flex;align-items:center;gap:7px;justify-content:flex-end;white-space:nowrap}
+  .hr-card{width:calc(100% + 44px);box-sizing:border-box;grid-column:1 / -1;margin:4px -22px 0;padding:0 12px}
+  .hr-card .card{margin:0;max-width:none}
+  @media(max-width:520px){.hr-item{grid-template-columns:28px minmax(0,1fr) auto;gap:7px}.hr-rank{width:28px;font-size:18px}.hr-word{font-size:15px}.hr-heat{font-size:11px}.hr-tag{font-size:10px;padding:1px 4px}}
+
+  .hr-rank.top{background:linear-gradient(135deg,#FFB98A,#FF8A5B 40%,#E6728F);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hr-rank.plain{color:#3a414d}
+  .hr-word{flex:1;font-size:16.5px;font-weight:800;color:var(--ink)}
+  .hr-tag{font-size:10.5px;font-weight:800;border-radius:5px;padding:1px 6px;flex:none}
+  .hr-tag.hot{background:rgba(255,138,91,.16);color:#FF8A5B;border:1px solid rgba(255,138,91,.4)}
+  .hr-tag.new{background:rgba(91,156,201,.16);color:#5B9CC9;border:1px solid rgba(91,156,201,.4)}
+  .hr-heat{font-size:12.5px;color:var(--ink-soft);flex:none;font-variant-numeric:tabular-nums}
+
+  /* 胡思宇宙：无框词云星图 */
+  .universe-canvas{position:relative;width:100%;height:clamp(520px,72vh,820px);overflow:hidden;touch-action:none;cursor:grab;background:radial-gradient(circle at 50% 45%,rgba(255,138,91,.07),transparent 42%)}
+  .uni-stars{overflow:visible;padding:44px;box-sizing:content-box;transform-origin:center;transition:transform .35s ease}
+  .universe-canvas.focused .uni-stars{transform:translate(0,0)}
+  .universe-canvas:active{cursor:grabbing}
+  .uni-stars{position:absolute;width:3600px;height:3000px;left:50%;top:50%;margin-left:-1800px;margin-top:-1500px;transition:transform .35s ease}
+  .uni-entry{position:absolute;background:none;border:0 !important;color:rgba(190,198,210,.52);padding:3px 5px;font-size:clamp(14px,2.8vw,22px);font-weight:800;cursor:pointer;transition:color .22s,transform .22s,text-shadow .22s,opacity .22s}
+  .uni-entry:hover,.uni-entry.active{color:var(--accent);opacity:1 !important;transform:scale(1.16);text-shadow:0 0 18px rgba(255,138,91,.65)}
+  .universe-canvas.focused .uni-entry:not(.active):not(.nearby){opacity:.22 !important;filter:brightness(.55);transition:opacity .5s,filter .5s}
+  .universe-canvas.focused .uni-entry.active{transform:scale(1.3);z-index:4;transition:color .5s,transform .5s,text-shadow .5s,opacity .5s}
+  .universe-canvas.focused .uni-entry.nearby{transform:scale(1.06);z-index:3;transition:color .5s,transform .5s,text-shadow .5s,opacity .5s}
+  .uni-view{transition:opacity .5s ease}
+  .uni-entry.nearby{color:rgba(255,171,132,.95);opacity:1 !important;transform:scale(1.08);text-shadow:0 0 10px rgba(255,138,91,.24)}
+  .uni-entry.nearby::before{content:"·";color:rgba(255,138,91,.9);margin-right:5px}
+  .uni-edge{position:absolute;height:1px;transform-origin:0 50%;background:linear-gradient(90deg,rgba(255,138,91,.62),rgba(255,138,91,0));pointer-events:none;opacity:.72;z-index:0}
+  .uni-entry{z-index:1}
+  .uni-view,.uni-view *{z-index:20}
+  .uni-view{position:absolute;z-index:30;left:7%;right:auto;top:10%;width:min(360px,88%);max-height:78%;overflow:auto;background:transparent;border:0;border-radius:16px;padding:0;box-shadow:none;animation:none}
+  .uni-view.expanded{left:4%;right:4%;top:6%;width:auto;max-height:84%;padding:14px}
+  @keyframes uniCardIn{from{opacity:0;transform:translateY(8px) scale(.96)}to{opacity:1;transform:none}}
+  .uni-view .uni-crumb,.uni-view .uni-center,.uni-view .uni-links-title,.uni-view .uni-links{display:none}
+  .uni-view .uni-card-host{margin-top:0}.uni-view .uni-card-host .card{margin:0;max-width:none}
+  .uni-view.expanded .uni-crumb,.uni-view.expanded .uni-center,.uni-view.expanded .uni-links-title,.uni-view.expanded .uni-links{display:flex}
+  .uni-view.expanded .uni-links-title{display:block}
+  .uni-view.expanded .uni-links{display:flex}
+  .uni-view .uni-card-host .card{padding:14px 13px}
+  .uni-view:not(.expanded) .uni-card-host .card{padding:16px 14px}
+  .uni-view:not(.expanded) .uni-card-host .card .term{font-size:24px}
+  .uni-view:not(.expanded) .uni-card-host .card .def,.uni-view:not(.expanded) .uni-card-host .card .ext,.uni-view:not(.expanded) .uni-card-host .card .src{display:block}
+  .uni-view:not(.expanded) .uni-card-host .card .actions{grid-template-columns:repeat(4,1fr);gap:6px}
+  .uni-view:not(.expanded) .uni-card-host .card .actions .act{padding:9px 3px;font-size:11px}
+  .uni-view:not(.expanded) .uni-card-host .card::after{content:"";display:none}
+  .universe-tip{text-align:center;color:var(--ink-soft);font-size:11px;margin:8px 0 0}
+  /* 宇宙词卡覆盖层 */
+  .uni-view{position:absolute;z-index:3;left:50%;right:auto;top:10px;bottom:auto;width:min(420px,calc(100% - 24px));max-height:none;overflow:visible;background:transparent;border:0;border-radius:18px;padding:0;box-shadow:none;transform:translate(-50%,0)}
+  .uni-view .card{width:100%;box-sizing:border-box}
+  .uni-view .card{max-height:none;overflow:visible}
+  .uni-input{display:flex;gap:8px;width:100%;margin-bottom:16px}
+  .uni-input input{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:12px;color:var(--ink);font-size:15px;padding:11px 14px;outline:none}
+  .uni-input input:focus{border-color:var(--accent)}
+  .uni-input button{background:linear-gradient(135deg,var(--accent),#E6728F);border:none;width:44px;border-radius:12px;font-size:17px;cursor:pointer;color:#1a1206}
+  .uni-hint{font-size:12px;color:var(--ink-soft);align-self:flex-start;margin-bottom:10px}
+  .uni-entries{display:flex;flex-wrap:wrap;gap:9px;width:100%;justify-content:center}
+  .uni-entry:active{transform:scale(.96)}
+  .uni-view{margin-top:0}
+  .uni-crumb{display:flex;flex-wrap:wrap;gap:6px;font-size:12px;color:var(--ink-soft);margin-bottom:12px;align-items:center}
+  .uni-crumb b{color:var(--accent);cursor:pointer}
+  .uni-center{display:flex;flex-direction:column;align-items:center;padding:18px 0 10px;gap:4px}
+  .uni-center .uc-word{font-size:34px;font-weight:900;background:linear-gradient(120deg,#FFB98A,#FF8A5B 40%,#E6728F 90%);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .uni-center .uc-lab{font-size:11px;color:var(--ink-soft);letter-spacing:2px}
+  .uni-card-host{width:100%;margin-top:8px}.uni-card-host .card{margin:0;max-width:none}.uni-links-title{font-size:12px;color:var(--ink-soft);margin-top:16px}.uni-links{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-start;padding:10px 0}
+  .uni-link{background:var(--panel);border:1px solid rgba(255,255,255,.12);color:var(--ink);border-radius:999px;padding:9px 15px;font-size:13.5px;cursor:pointer;font-weight:700;transition:all .15s;display:flex;align-items:center;gap:6px}
+  .uni-link:active{transform:scale(.96);border-color:var(--accent)}
+  .uni-link .d{color:var(--ink-soft);font-size:11px}
+
+  /* 我的（微信用户页样式） */
+  .mine-head{display:flex;align-items:center;gap:14px;width:100%;padding:6px 2px 16px}
+  .mine-avatar{width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#E6728F);display:flex;align-items:center;justify-content:center;font-size:26px;color:#1a1206}
+  .mine-name{font-size:18px;font-weight:900;color:var(--ink)}
+  .mine-list{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .mine-item{display:flex;align-items:center;gap:12px;width:100%;background:transparent;border:none;border-bottom:1px solid var(--line);padding:14px 16px;font-size:15px;font-weight:700;color:var(--ink);cursor:pointer;text-align:left}
+  .mine-item:last-child{border-bottom:none}
+  .mine-item:active{background:rgba(255,255,255,.04)}
+  .mine-item .badge{margin-left:auto}
+  #favCount,#rantCount,#likedCount{display:none !important}
+  .mine-arrow{color:var(--ink-soft);font-size:20px;font-weight:400;margin-left:auto}
+  .mine-item .badge + .mine-arrow{margin-left:6px}
+  .mine-content{width:100%;margin-top:14px;min-height:60px;font-size:13.5px;color:var(--ink-soft);text-align:center}
+  body.mine-subpage .tabbar{display:none}
+  .mine-content.subpage{position:fixed;z-index:80;inset:0;background:var(--bg);padding:26px 18px 90px;box-sizing:border-box;margin:0;overflow:auto;text-align:left}
+  .mine-subhead{display:flex;align-items:center;gap:12px;margin-bottom:18px;color:var(--ink);font-size:20px;font-weight:900}.mine-back{background:none;border:0;color:var(--ink-soft);font-size:26px;cursor:pointer}
+  .mine-rant-card,.mine-card-row{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin-bottom:8px;text-align:left;overflow:hidden}
+  .mine-fav-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:start}.mine-fav-tile{min-width:0;cursor:pointer}.mine-fav-mini{position:relative;background:var(--panel);border:1px solid var(--accent-soft);border-left:4px solid var(--accent);border-radius:12px;padding:11px 10px 13px;min-height:145px;box-sizing:border-box;box-shadow:0 5px 14px rgba(0,0,0,.16);transition:transform .18s,box-shadow .18s}.mine-fav-tile:active .mine-fav-mini{transform:scale(.98)}.mine-fav-mini .term{font-size:20px;font-weight:900;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mine-fav-mini .pos{display:inline-block;color:var(--accent);font-size:11px;border:1px solid currentColor;border-radius:8px;padding:2px 6px;margin:6px 0}.mine-fav-mini .def{font-size:12px;line-height:1.5;color:var(--ink);display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}.mine-fav-mini .mini-ext{display:none}.mini-heart{position:absolute;right:9px;bottom:8px;font-size:12px}.mine-fav-detail{grid-column:1 / -1;animation:cardIn .28s ease}.mine-fav-detail .card{margin:0}.mine-fav-detail .ext{display:block}.mine-fav-detail .actions [data-act="polish"]{display:none}
+  .mine-like-detail{padding:10px}.mine-like-detail .card{margin:0}.mine-like-detail .card-close{display:block}
+  .mine-rant-summary,.mine-card-row{padding:12px 14px;cursor:pointer}
+  .mine-rant-summary b,.mine-card-row b{display:block;color:var(--accent);font-size:14px}
+  .mine-rant-summary span,.mine-card-row span{display:block;color:var(--ink-soft);font-size:12px;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mine-rant-detail{padding:0 10px 10px}.mine-rant-detail .card{margin:0 0 8px}.mine-rant-detail>.btn{width:100%;margin-top:6px}
+
+  /* 写（我也写一段） */
+  .rant-field-label{width:100%;text-align:left;color:var(--ink-soft);font-size:12px;margin-top:10px;margin-bottom:5px}
+  .rant-input{box-sizing:border-box;width:100%;background:var(--panel);border:1px solid var(--line);border-radius:12px;color:var(--ink);font-size:14px;line-height:1.5;padding:11px 13px;outline:none;font-family:inherit}
+  .rant-input:focus{border-color:var(--accent)}
+  .rant-box{width:100%;min-height:140px;box-sizing:border-box;background:var(--panel);border:1px solid var(--line);border-radius:14px;color:var(--ink);font-size:14.5px;line-height:1.7;padding:13px 14px;margin:10px 0;outline:none;resize:vertical;font-family:inherit}
+  .rant-box:focus{border-color:var(--accent)}
+  .rant-actions{display:flex;gap:10px;width:100%}
+  .rant-actions .btn{flex:1}
 </style>
 </head>
 <body>
@@ -149,35 +306,101 @@
   <div class="topbar">
     <div class="brand"><span class="dot"></span>胡思辞典</div>
     <div style="display:flex;gap:8px;">
-      <button class="topbtn" id="submitOpen">✉️ 投稿</button>
       <button class="topbtn" id="favOpen">⭐ 收藏 <span class="badge" id="favCount">0</span></button>
     </div>
   </div>
 
   <main class="hero" id="hero">
-    <h1 class="hero-title">胡思辞典</h1>
-    <p class="hero-sub">搜一个词，看看它「本该」是什么样子<br/>离谱，但合理</p>
-    <form class="search" id="searchForm" autocomplete="off">
-      <input id="searchInput" placeholder="比如：咖啡、拖延、地铁上的陌生人…" />
-      <button type="submit" aria-label="搜索">🔍</button>
-    </form>
-    <div class="quick" id="quick">
-      <button class="chip daily" id="dailyChip">🎲 抽个胡思</button>
-    </div>
-    <div class="today" id="todayCard" hidden>
-      <span class="today-tag">今日胡思</span>
-      <span class="today-word" id="todayWord"></span>
-      <span class="today-sub">点一下搜它</span>
-      <span class="today-arrow">→</span>
-    </div>
+    <!-- 左1：今日（今日胡思 + 全民胡思榜） -->
+    <section class="panel" id="panel-today" data-panel="today" hidden>
+      <div class="today" id="todayCard" hidden>
+        <span class="today-tag">今日胡思</span>
+        <span class="today-word" id="todayWord"></span>
+        <span class="today-sub">点一下搜它</span>
+        <span class="today-arrow">→</span>
+      </div>
+      <div class="hotrank">
+        <div class="hotrank-head">
+          <span class="hotrank-title">🔥 全民胡思榜</span>
+          <span class="hotrank-sub">2026 年度 · 全网热词</span>
+        </div>
+        <div class="hotrank-list" id="hotrankList"></div>
+      </div>
+    </section>
+
+    <!-- 左2：胡思宇宙（关联词网络） -->
+    <section class="panel" id="panel-universe" data-panel="universe" hidden>
+      <h2 class="panel-title">🌌 胡思宇宙</h2>
+      <p class="panel-sub">在词与词之间穿梭。点亮一颗星，看看它和谁相连。</p>
+      <div class="universe-canvas" id="universeCanvas">
+        <div class="uni-stars" id="uniEntries"></div>
+        <div class="uni-view" id="uniView" hidden></div>
+      </div>
+      <p class="universe-tip">拖动或滑动去逛；点空白回到星图</p>
+    </section>
+
+    <!-- 中：主页（搜索） -->
+    <section class="panel" id="panel-search" data-panel="search">
+      <h1 class="hero-title">胡思辞典</h1>
+      <p class="hero-sub">搜一个词，看看它「本该」是什么样子<br/>离谱，但合理</p>
+      <form class="search" id="searchForm" autocomplete="off">
+        <input id="searchInput" placeholder="比如：咖啡、拖延、地铁上的陌生人…" />
+        <button type="submit" aria-label="搜索">🔍</button>
+      </form>
+      <div class="quick" id="quick">
+        <button class="chip daily" id="dailyChip">🎲 抽个胡思</button>
+      </div>
+    </section>
+
+    <!-- 右1：写（我也写一段） -->
+    <section class="panel" id="panel-write" data-panel="write" hidden>
+      <h2 class="panel-title">✍️ 我也写一段</h2>
+      <p class="panel-sub" style="text-align:left">对着一个词，写下你的胡思乱想。<br/>好的乱想会被人看到，也可能被收进辞典。</p>
+      <div class="rant-field-label">我想写的词</div>
+      <input id="rantWordInput" class="rant-input" placeholder="想写哪个词？如：熬夜、猫、周末…" />
+      <div class="rant-field-label">它是什么词性</div>
+      <select id="rantPosInput" class="rant-input">
+        <option value="名词">名词</option><option value="动词">动词</option><option value="形容词">形容词</option><option value="副词">副词</option><option value="叹词">叹词</option><option value="网络用语">网络用语</option><option value="自定义">自定义词性…</option>
+      </select>
+      <input id="rantCustomPos" class="rant-input" hidden placeholder="输入自定义词性，例如：一种状态" />
+      <textarea id="rantInput" class="rant-box" maxlength="400" placeholder="写下你的乱想…（比如：熬夜是白天欠下的债，晚上连本带利还）"></textarea>
+      <div class="rant-actions">
+        <button class="btn ghost" onclick="saveRant()">💾 存进我的乱想</button>
+        <button class="btn" onclick="submitRant()">📮 投稿给作者</button>
+      </div>
+      <p class="panel-tip" id="rantTip">存进「我的乱想」后可在「我的」里查看；投稿会直接送到作者后台。</p>
+    </section>
+
+    <!-- 右2：我的（微信用户页样式） -->
+    <section class="panel" id="panel-mine" data-panel="mine" hidden>
+      <h2 class="panel-title">⭐ 我的</h2>
+      <div class="mine-head">
+        <div class="mine-avatar">🧠</div>
+        <div class="mine-name">我的胡思</div>
+      </div>
+      <div class="mine-list">
+        <button class="mine-item" data-mineview="rant">📝 我的乱想 <span class="badge" id="rantCount">0</span><b class="mine-arrow">›</b></button>
+        <button class="mine-item" data-mineview="liked">👍 点赞记录 <span class="badge" id="likedCount">0</span><b class="mine-arrow">›</b></button>
+        <button class="mine-item" data-mineview="msg">💬 给作者留言 <b class="mine-arrow">›</b></button>
+      </div>
+      <div class="mine-content" id="mineContent"></div>
+    </section>
   </main>
 
   <section class="result" id="result">
-    <button class="back" id="backBtn">← 再搜一个</button>
     <div id="cardHost"></div>
   </section>
 
   <div class="foot">胡思辞典 · 一个公开的脑洞玩具</div>
+
+  <!-- 底部 5 Tab 导航（2+1+2，手机 + 桌面都显示） -->
+  <nav class="tabbar" id="tabbar">
+    <button class="tab" data-tab="today"><span class="tab-ico">✨</span><span class="tab-lab">今日</span></button>
+    <button class="tab" data-tab="universe"><span class="tab-ico">🌌</span><span class="tab-lab">宇宙</span></button>
+    <button class="tab active" data-tab="search"><span class="tab-ico">🔍</span><span class="tab-lab">主页</span></button>
+    <button class="tab" data-tab="write"><span class="tab-ico">✍️</span><span class="tab-lab">写</span></button>
+    <button class="tab" data-tab="mine"><span class="tab-ico">⭐</span><span class="tab-lab">我的</span></button>
+  </nav>
 
   <!-- 存相册弹层 -->
   <div class="mask" id="imgMask">
@@ -271,6 +494,289 @@ function shuffleQuick(){
   });
 }
 shuffleQuick();
+
+/* ============ 底部 5 Tab 导航（2+1+2）============ */
+function switchTab(tab){
+  if(!document.body.classList.contains("mine-subpage")) window.__activeTab = tab;
+  document.querySelectorAll(".panel").forEach(p => {
+    p.hidden = p.dataset.panel !== tab;
+  });
+  // 搜索结果只属于主页，离开主页立即隐藏并清空
+  if(tab !== "search"){
+    result.classList.remove("show");
+    cardHost.innerHTML = "";
+    current = null;
+    hero.classList.remove("shrink");
+  }
+  document.querySelectorAll(".tab").forEach(t => {
+    t.classList.toggle("active", t.dataset.tab === tab);
+  });
+  if(tab === "today") renderHotRank();
+  if(tab === "universe") initUniverse();
+  if(tab === "mine") { document.getElementById("mineContent").innerHTML = ""; }
+  if(tab === "write"){ /* 写 tab 无需预加载 */ }
+  document.getElementById("hero").scrollIntoView({behavior:"smooth", block:"start"});
+}
+document.querySelectorAll(".tab").forEach(t => t.addEventListener("click", () => { if(document.body.classList.contains("mine-subpage")) return; switchTab(t.dataset.tab); }));
+
+/* ============ 全民胡思榜（2026 年度 · 全网热词，预置数据 + 模糊热度）============ */
+const ANNUAL_HOT = [
+  { word: "人工智能", heat: "3221.4万", tag: "hot" },
+  { word: "班味",     heat: "1852.9万", tag: "hot" },
+  { word: "搭子",     heat: "1263.8万", tag: "new" },
+  { word: "内卷",     heat: "986.5万" },
+  { word: "摸鱼",     heat: "742.1万" },
+  { word: "躺平",     heat: "518.7万" },
+  { word: "i人",      heat: "463.2万" },
+  { word: "e人",      heat: "410.5万" },
+  { word: "已读乱回", heat: "372.9万" },
+  { word: "硬控",     heat: "295.4万" }
+];
+function renderHotRank(){
+  const host = document.getElementById("hotrankList");
+  if(!host || host.dataset.rendered) return;
+  host.dataset.rendered = "1";
+  host.innerHTML = ANNUAL_HOT.map((it, i) => {
+    const rank = i < 3 ? `<span class="hr-rank top">${i+1}</span>` : `<span class="hr-rank plain">${i+1}</span>`;
+    const tag = "";
+    return `<div class="hr-item" data-w="${escapeHtml(it.word)}">
+      ${rank}
+      <div class="hr-main"><span class="hr-word">${escapeHtml(it.word)}</span></div>
+      <div class="hr-meta"><span class="hr-heat">热度 ${it.heat}</span></div>
+      <div class="hr-card" hidden></div>
+    </div>`;
+  }).join("");
+  host.querySelectorAll(".hr-item").forEach(el => {
+    el.addEventListener("click", async (e) => {
+      if(e.target.closest(".card")) return;
+      const slot = el.querySelector(".hr-card");
+      if(!slot.hidden){ slot.hidden = true; slot.innerHTML = ""; return; }
+      host.querySelectorAll(".hr-card").forEach(x => { x.hidden=true; x.innerHTML=""; });
+      const w = el.dataset.w;
+      const text = BUILTIN[w] || "【名词】，一个正在被大家重新理解的词。";
+      slot.innerHTML = cardHTML(w, text, getExt(w), "builtin");
+      slot.hidden = false;
+      bindCard(slot,{word:w,text,ext:getExt(w)});
+    });
+  });
+}
+
+/* ============ 我的（微信用户页样式）============ */
+let favReturnTab = "mine";
+function renderMineView(view, returnTab){
+  let host = document.getElementById("mineContent");
+  if(view === "fav") favReturnTab = returnTab || window.__activeTab || "mine";
+  if(!host) return;
+  const shell=host;
+  document.body.classList.add("mine-subpage");
+  shell.classList.add("subpage");
+  const titles={fav:"收藏夹",rant:"我的乱想",liked:"点赞记录",msg:"给作者留言"};
+  shell.innerHTML=`<div class="mine-subhead"><button class="mine-back" id="mineBack">‹</button><span>${titles[view]||"我的"}</span></div>`;
+  document.getElementById("mineBack").onclick=()=>{shell.classList.remove("subpage");document.body.classList.remove("mine-subpage");shell.innerHTML="";document.querySelectorAll(".panel").forEach(p=>p.hidden=true);const target=favReturnTab||"mine";const panel=document.querySelector(`.panel[data-panel="${target}"]`);if(panel) panel.hidden=false;document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active",t.dataset.tab===target));document.getElementById("mineContent").classList.remove("subpage");document.getElementById("mineContent").innerHTML="";document.getElementById("hero").classList.remove("shrink");if(target==="search") document.getElementById("result").classList.remove("show");document.getElementById("hero").scrollIntoView({behavior:"smooth",block:"start"});};
+  const body=document.createElement("div"); shell.appendChild(body); host=body;
+  if(view === "fav"){
+    refreshFavBadge();
+    if(!fav.length){ host.innerHTML = '<div style="padding:26px 0;color:var(--ink-soft)">还没有收藏的词卡<br/><span style="font-size:12px">去搜个词，点「⭐ 收藏」就会出现在这里</span></div>'; return; }
+    host.className="mine-fav-grid";
+    host.innerHTML = fav.map((x,i) => `<div class="mine-fav-tile" data-i="${i}"><div class="mine-fav-mini" style="--accent:${accentFor(x.word)[0]};--accent-soft:${accentFor(x.word)[1]}"><div class="term">${escapeHtml(x.word)}</div><div class="pos">【${escapeHtml(parseEntry(x.text).pos)}】</div><div class="def">${escapeHtml((parseEntry(x.text).def||"").slice(0,64))}</div><div class="mini-ext">${escapeHtml((x.ext||"").slice(0,46))}</div><div class="mini-heart">⭐</div></div></div>`).join("");
+    host.querySelectorAll(".mine-fav-tile").forEach(tile=>tile.addEventListener("click",()=>{
+      const old=host.querySelector(".mine-fav-detail"); if(old) old.remove();
+      const x=fav[+tile.dataset.i], detail=document.createElement("div");
+      detail.className="mine-fav-detail"; detail.innerHTML=cardHTML(x.word,x.text,x.ext,"fav"); detail.querySelector('[data-act="polish"]')?.remove(); tile.after(detail);
+      bindCard(detail,{word:x.word,text:x.text,ext:x.ext,src:"fav"});
+      detail.querySelector('[data-act="polish"]')?.remove();
+      detail.querySelector(".card-close")?.addEventListener("click",()=>detail.remove());
+    }));
+  } else if(view === "rant"){
+    const rants = getMyRants();
+    if(!rants.length){ host.innerHTML = '<div style="padding:26px 0;color:var(--ink-soft)">📝 还没写过乱想<br/><span style="font-size:12px">去「✍️ 写」tab，对着一个词写下你的胡思乱想</span></div>'; return; }
+    host.innerHTML = rants.map((r,i) => `<div class="mine-rant-card" data-i="${i}"><div class="mine-rant-summary"><b>${escapeHtml(r.word)}</b><span>${escapeHtml(r.rant.slice(0,42))}</span></div><div class="mine-rant-detail" hidden>${cardHTML(r.word, `【${r.pos||"名词"}】${r.rant}`, r.rant, "builtin")}<button class="btn" onclick="submitRantById(${i})">📮 投稿给作者</button><button class="btn ghost" onclick="deleteRant(${i})">删除</button></div></div>`).join("");
+    host.querySelectorAll(".mine-rant-summary").forEach(row=>row.addEventListener("click",()=>row.nextElementSibling.hidden=!row.nextElementSibling.hidden));
+    host.querySelectorAll(".mine-rant-detail .card").forEach((card,i)=>{ const detail=card.parentElement; bindCard(detail,{word:rants[i].word,text:`【${rants[i].pos||"名词"}】${rants[i].rant}`,ext:rants[i].rant}); card.querySelector(".card-close")?.addEventListener("click",e=>{e.stopPropagation();detail.hidden=true;}); });
+  } else if(view === "liked"){
+    const liked = likedWords.map(w => ({word:w, text:BUILTIN[w]||"【名词】，一个正在被重新理解的词。", ext:getExt(w)}));
+    const b=document.getElementById("likedCount"); if(b){b.textContent=liked.length;b.style.display=liked.length?"inline-flex":"none";}
+    if(!liked.length){ host.innerHTML = '<div style="padding:26px 0;color:var(--ink-soft)">还没有点过赞的词卡</div>'; return; }
+    host.innerHTML = liked.map((x,i)=>`<div class="mine-card-row" data-i="${i}"><b>${escapeHtml(x.word)}</b><span>${escapeHtml((parseEntry(x.text).def||"").slice(0,45))}</span></div>`).join("");
+    host.querySelectorAll(".mine-card-row").forEach(row=>row.addEventListener("click",()=>{ const i=+row.dataset.i, x=liked[i]; const old=row.querySelector(".mine-like-detail"); if(old){old.remove();return;} const detail=document.createElement("div"); detail.className="mine-like-detail"; detail.innerHTML=cardHTML(x.word,x.text,x.ext,"builtin"); row.appendChild(detail); bindCard(detail,{word:x.word,text:x.text,ext:x.ext}); detail.querySelector('[data-act="polish"]')?.remove(); }));
+  } else if(view === "msg"){
+    host.innerHTML = `<div style="width:100%;padding:10px 0">
+      <p style="font-size:14px;line-height:1.8;color:var(--ink-soft);margin:0 0 16px;text-align:left">想给作者留言？去小红书找「<b style="color:var(--ink)">撕纸毕加索</b>」发私信就行——投稿、建议、合作都可以。</p>
+      <a class="btn primary" href="https://xhslink.cn/o/7s6Fe1hRVeg" target="_blank" rel="noopener">去小红书留言 ✉️</a>
+    </div>`;
+  }
+}
+document.querySelectorAll(".mine-item").forEach(el => el.addEventListener("click", () => renderMineView(el.dataset.mineview)));
+
+/* ============ 我的乱想 / 投稿（本地存储）============ */
+const LS_RANTS = "husi_my_rants_v1";   // [{word, rant, ts}]
+const LS_SENT  = "husi_sent_v1";        // 已投稿记录
+function getMyRants(){ try{ return JSON.parse(localStorage.getItem(LS_RANTS)||"[]"); }catch(e){ return []; } }
+function saveMyRants(list){ localStorage.setItem(LS_RANTS, JSON.stringify(list)); }
+function getSentRants(){ try{ return JSON.parse(localStorage.getItem(LS_SENT)||"[]"); }catch(e){ return []; } }
+function refreshRantBadge(){ const n=getMyRants().length; const b=document.getElementById("rantCount"); if(b){ b.textContent=n; b.style.display=n?"inline-flex":"none"; } }
+function getRantPos(){
+  const select = document.getElementById("rantPosInput");
+  if(!select) return "名词";
+  if(select.value === "自定义") return document.getElementById("rantCustomPos").value.trim() || "自定义词性";
+  return select.value;
+}
+function saveRant(){
+  const word = document.getElementById("rantWordInput").value.trim();
+  const rant = document.getElementById("rantInput").value.trim();
+  const pos = getRantPos();
+  if(!word || !rant){ toast("词和乱想都要写哦"); return; }
+  const list = getMyRants();
+  list.unshift({ word, pos, rant, ts: Date.now() });
+  saveMyRants(list);
+  refreshRantBadge();
+  document.getElementById("rantInput").value = "";
+  toast("💾 已存进我的乱想");
+  track("rant_save", word);
+}
+function deleteRant(i){
+  const list = getMyRants(); list.splice(i,1); saveMyRants(list);
+  refreshRantBadge(); renderMineView("rant"); toast("已删除");
+}
+
+/* ============ 胡思宇宙（关联词网络）============ */
+const UNI_ENTRY_WORDS = ["摸鱼","爱情","孤独","梦想","加班","朋友圈","猫","熬夜"];
+let uniCrumb = [];   // 路径栈
+function initUniverse(){
+  const entries = document.getElementById("uniEntries");
+  if(!entries || entries.dataset.rendered) return;
+  entries.dataset.rendered = "1";
+  const words = [...new Set([...UNI_ENTRY_WORDS, ...Object.keys(BUILTIN).filter(w=>w.length>=2)])].slice(0,150);
+  const placed=[];
+  entries.innerHTML = words.map((w,i) => {
+    const angle=i*2.39996, radius=38+Math.sqrt(i)*78;
+    const x=1600+Math.cos(angle)*radius, y=1300+Math.sin(angle)*radius*.7;
+    return `<button class="uni-entry" data-w="${escapeHtml(w)}" data-x="${x}" data-y="${y}" style="left:${x}px;top:${y}px;opacity:${.34+(i%7)*.085};font-size:${14+(i%5)*3}px">${escapeHtml(w)}</button>`;
+  }).join("");
+  entries.querySelectorAll(".uni-entry").forEach(b => b.addEventListener("click", e => { e.stopPropagation(); enterUniverse(b.dataset.w); }));
+  const canvas = document.getElementById("universeCanvas");
+  let dragging=false,sx=0,sy=0,ox=0,oy=0;
+  canvas.onpointerdown=e=>{dragging=true;sx=e.clientX;sy=e.clientY;canvas.setPointerCapture(e.pointerId)};
+  canvas.onpointermove=e=>{if(!dragging)return;ox+=e.clientX-sx;oy+=e.clientY-sy;sx=e.clientX;sy=e.clientY;entries.style.transform=`translate(${ox}px,${oy}px)`; const view=document.getElementById("uniView"); if(view&&!view.hidden){view.style.left=(view.dataset.baseX*1+ox)+"px";view.style.top=(view.dataset.baseY*1+oy)+"px";}};
+  canvas.onpointerup=()=>dragging=false;
+  canvas.onclick=e=>{if(e.target===canvas||e.target===entries||!e.target.closest(".uni-entry")) resetUniverse()};
+}
+function resetUniverse(){ const view=document.getElementById("uniView"), canvas=document.getElementById("universeCanvas"); if(view){view.hidden=true;view.classList.remove("expanded");view.innerHTML="";view.style.transform="translate(-50%,0)";view.style.left="50%";view.style.top="10px";} if(canvas) canvas.classList.remove("focused"); document.querySelectorAll(".uni-entry").forEach(x=>{x.classList.remove("active","nearby");if(x.dataset.x)x.style.left=x.dataset.x+"px";if(x.dataset.y)x.style.top=x.dataset.y+"px";}); document.querySelectorAll(".uni-edge").forEach(x=>x.remove()); }
+function enterUniverse(word){
+  const view = document.getElementById("uniView"), canvas=document.getElementById("universeCanvas");
+  if(!view) return;
+  canvas?.classList.add("focused");
+  document.querySelectorAll(".uni-entry").forEach(x=>x.classList.toggle("active",x.dataset.w===word));
+  uniCrumb = [word];
+  view.classList.remove("expanded");
+  view.dataset.baseX=String(canvas.clientWidth/2); view.dataset.baseY="12";
+  view.style.left=view.dataset.baseX+"px"; view.style.top="12px"; view.style.transform="translate(-50%,0)";
+  view.style.opacity="0";
+  view.hidden = false;
+  requestAnimationFrame(()=>{view.style.opacity="1";});
+  loadRelated(word, () => renderUniverse(word));
+}
+function renderUniverse(word){
+  const view = document.getElementById("uniView");
+  // 面包屑
+  let crumbHtml = '<span>你的轨迹：</span>';
+  uniCrumb.forEach((w,i) => {
+    if(i === uniCrumb.length-1) crumbHtml += `<b>${escapeHtml(w)}</b>`;
+    else crumbHtml += `<b onclick="goCrumb(${i})">${escapeHtml(w)}</b>`;
+    if(i < uniCrumb.length-1) crumbHtml += '<span>›</span>';
+  });
+  // 关联词
+  const related = (window._relatedCache && window._relatedCache[word]) || [];
+  let linksHtml = "";
+  if(related.length){
+    linksHtml = related.map(r => `<button class="uni-link" data-w="${escapeHtml(r)}">${escapeHtml(r)}<span class="d">→</span></button>`).join("");
+  } else {
+    // fallback：猜几个相近词（词库随机 3 个不重复）
+    const keys = Object.keys(BUILTIN).filter(k => k !== word && k.length >= 2);
+    const picked = [];
+    for(let i=0; i<3 && keys.length; i++){
+      const idx = Math.floor(Math.random()*keys.length);
+      picked.push(keys.splice(idx,1)[0]);
+    }
+    linksHtml = picked.map(r => `<button class="uni-link" data-w="${escapeHtml(r)}">${escapeHtml(r)}<span class="d">我猜的</span></button>`).join("");
+  }
+  const wordText = BUILTIN[word] || `【名词】，一个正在被重新理解的词。`;
+  view.innerHTML = `
+    <div class="uni-crumb" id="uniCrumb">${crumbHtml}</div>
+    <div class="uni-center">
+      <div class="uc-word">${escapeHtml(word)}</div>
+      <div class="uc-lab">· ${escapeHtml(word)} 的宇宙 ·</div>
+    </div>
+    <div class="uni-card-host">${cardHTML(word, wordText, getExt(word), "builtin")}</div>
+    <div class="uni-links-title">它还连着</div>
+    <div class="uni-links">${linksHtml}</div>
+  `;
+  bindCard(view,{word,text:wordText,ext:getExt(word)});
+  const card=view.querySelector(".card");
+  const linked = related.length ? related : [];
+  document.querySelectorAll(".uni-edge").forEach(x=>x.remove());
+  document.querySelectorAll(".uni-entry").forEach(x => x.classList.toggle("nearby", linked.includes(x.dataset.w)));
+  // 让关联词真正聚拢到主词周围，形成小行星环
+  const center = document.querySelector(`.uni-entry[data-w="${CSS.escape(word)}"]`);
+  if(center){
+    const cx=center.offsetLeft+center.offsetWidth/2, cy=center.offsetTop+center.offsetHeight/2;
+    linked.forEach((rw,i)=>{ const node=document.querySelector(`.uni-entry[data-w="${CSS.escape(rw)}"]`); if(!node)return; const a=(i/Math.max(linked.length,1))*Math.PI*2-Math.PI/2, rr=Math.max(82,Math.max(center.offsetWidth,center.offsetHeight)/2+node.offsetWidth/2+18)+Math.floor(i/6)*28; node.style.left=(cx+Math.cos(a)*rr-node.offsetWidth/2)+"px"; node.style.top=(cy+Math.sin(a)*rr-node.offsetHeight/2)+"px"; });
+  }
+  view.querySelector(".card-close")?.addEventListener("click", () => { view.hidden=true; view.style.opacity="0"; });
+  view.style.marginTop="0";
+  view.querySelectorAll(".uni-link").forEach(b => b.addEventListener("click", () => {
+    uniCrumb.push(b.dataset.w);
+    loadRelated(b.dataset.w, () => renderUniverse(b.dataset.w));
+  }));
+}
+function goCrumb(i){
+  uniCrumb = uniCrumb.slice(0, i+1);
+  renderUniverse(uniCrumb[i]);
+}
+async function loadRelated(word, cb){
+  try{
+    const r = await fetch(API_BASE+"/api/related?word="+encodeURIComponent(word), { cache:"no-store" });
+    const j = await r.json();
+    if(!window._relatedCache) window._relatedCache = {};
+    window._relatedCache[word] = (j && j.related) || [];
+  }catch(e){}
+  if(cb) cb();
+}
+// 宇宙不再使用搜索框；入口全部来自词云点击。
+
+function submitRant(){
+  const word = document.getElementById("rantWordInput").value.trim();
+  const rant = document.getElementById("rantInput").value.trim();
+  const pos = getRantPos();
+  if(!word || !rant){ toast("词和乱想都要写哦"); return; }
+  doSubmitRant(word, rant, pos);
+}
+function submitRantById(i){
+  const list = getMyRants(); const r = list[i];
+  if(!r) return;
+  doSubmitRant(r.word, r.rant);
+}
+async function doSubmitRant(word, rant){
+  toast("📮 正在投稿…");
+  try{
+    const r = await fetch(API_BASE+"/api/rant-submit", {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ word, rant, author: "匿名" })
+    });
+    const j = await r.json();
+    if(j && j.ok){
+      const sent = getSentRants();
+      sent.unshift({ word, rant, ts: Date.now() });
+      localStorage.setItem(LS_SENT, JSON.stringify(sent));
+      document.getElementById("rantInput").value = "";
+      toast("📮 投稿成功，作者会在后台看到");
+      track("rant_submit", word);
+      renderMineView("rant");
+    } else {
+      toast("投稿失败："+(j&&j.error||"未知"));
+    }
+  }catch(e){ toast("投稿失败，网络问题"); }
+}
 
 /* ============ 今日胡思（每日一词）============ */
 async function loadToday(){
@@ -381,6 +887,38 @@ function refreshFavBadge(){
   const n=fav.length;
   favCount.textContent=n; favCount2.textContent=n;
   favCount.style.display = n? "inline-flex":"none";
+  const f3 = document.getElementById("favCount3");
+  if(f3){ f3.textContent=n; f3.style.display = n? "inline-flex":"none"; }
+  refreshRantBadge();
+}
+
+/* ============ 点赞（本地防重复 + 云端计数）============ */
+const LS_LIKED = "husi_liked_v1";        // 本机点过赞的词（去重）
+let likedWords = (function(){ try{ return JSON.parse(localStorage.getItem(LS_LIKED)||"[]"); }catch(e){ return []; } })();
+const LS_LIKE_CNT = "husi_like_cnt_v1";  // 云端赞数缓存 {词: n}
+let likeCnt = (function(){ try{ return JSON.parse(localStorage.getItem(LS_LIKE_CNT)||"{}"); }catch(e){ return {}; } })();
+function isLiked(w){ return likedWords.includes(normalize(w)); }
+function likeCount(w){ return likeCnt[normalize(w)] || 0; }
+function refreshLikeButton(word){ document.querySelectorAll(`[data-act="like"][data-word="${CSS.escape(normalize(word))}"]`).forEach(b=>{b.classList.toggle("saved",isLiked(word));b.innerHTML=isLiked(word)?`👍 已点赞 <span class="like-n" data-n>${likeCount(word)||""}</span>`:`👍 点赞 <span class="like-n" data-n>${likeCount(word)||""}</span>`;}); }
+function persistLiked(){ localStorage.setItem(LS_LIKED, JSON.stringify(likedWords)); }
+function persistLikeCnt(){ localStorage.setItem(LS_LIKE_CNT, JSON.stringify(likeCnt)); }
+async function likeWord(w){
+  const word = normalize(w);
+  const already = isLiked(word);
+  if(already){ likedWords = likedWords.filter(x=>x!==word); persistLiked(); likeCnt[word]=Math.max(0,(likeCnt[word]||1)-1); persistLikeCnt(); toast("已取消点赞"); refreshLikeButton(word); return; }
+  likedWords.push(word); persistLiked();
+  const old = likeCnt[word] || 0;
+  likeCnt[word] = old + 1; persistLikeCnt();
+  refreshLikeButton(word);
+  track("like", word);
+  try{
+    const r = await fetch(API_BASE+"/api/like", {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ word })
+    });
+    const j = await r.json();
+    if(j && j.n){ likeCnt[word] = j.n; persistLikeCnt(); }
+  }catch(e){}
 }
 
 /* ============ AI 生成 ============ */
@@ -412,51 +950,65 @@ function cardHTML(word, text, ext, src){
   const {pos, def} = parseEntry(text);
   const ac = accentFor(word);
   const faved = isFav(word);
+  const liked = isLiked(word);
   return `<div class="card" style="--accent:${ac[0]};--accent-soft:${ac[1]}">
     <div class="term">${escapeHtml(word)}</div>
     <div class="pos">【${escapeHtml(pos)}】</div>
     <div class="def">${escapeHtml(def)}</div>
     ${ext?`<div class="ext"><span class="lab">乱想Time</span>${escapeHtml(ext)}</div>`:""}
     <div class="src">${src==="ai"?"✨ AI 即兴编纂":src==="fav"?"⭐ 你的收藏":"《胡思辞典》内置"}</div>
+    <button class="card-close" data-act="close" aria-label="关闭">×</button>
     <div class="actions">
-      <button class="act" data-act="album">📥 存相册</button>
-      <button class="act ${faved?"saved":""}" data-act="fav">${faved?"⭐ 已收藏":"⭐ 收藏"}</button>
-      <button class="act primary" data-act="polish">✨ 润色</button>
+      <button class="act" data-act="album" data-word="${escapeHtml(word)}">📥 存相册</button>
+      <button class="act ${faved?"saved":""}" data-act="fav" data-word="${escapeHtml(word)}">${faved?"⭐ 已收藏":"⭐ 收藏"}</button>
+      <button class="act ${liked?"saved":""}" data-act="like" data-word="${escapeHtml(word)}">${liked?"👍 已点赞":"👍 点赞"}<span class="like-n" data-n>${likeCount(word)||""}</span></button>
+      <button class="act primary" data-act="polish" data-word="${escapeHtml(word)}">✨ 乱想</button>
     </div>
   </div>`;
 }
 
 let current = null; // {word, text, ext}
 function renderCard(word, text, ext, src){
-  current = {word, text, ext:ext||""};
+  current = {word, text, ext:ext||"", src};
   hero.classList.add("shrink");
   result.classList.add("show");
   result.scrollIntoView({behavior:"smooth", block:"start"});
   cardHost.innerHTML = cardHTML(word, text, ext, src);
   bindCard();
 }
-function bindCard(){
-  cardHost.querySelector(".card").addEventListener("click", e=>{
+function bindCard(root=cardHost, state=null){
+  const card=root.querySelector(".card"); if(!card || card.dataset.bound) return;
+  if(state) state.host=root;
+  card.dataset.bound="1";
+  card.addEventListener("click", e=>{
     const b=e.target.closest("[data-act]"); if(!b) return;
+    e.preventDefault(); e.stopPropagation();
+    const s=state || current; if(!s) return;
     const act=b.dataset.act;
-    if(act==="album") saveToAlbum(current.word, current.text, current.ext);
-    else if(act==="fav"){ toggleFav(current.word, current.text, current.ext); renderCard(current.word, current.text, current.ext, current.src||"fav"); }
-    else if(act==="polish") doPolish();
+    if(act==="close"){ card.remove(); return; }
+    if(act==="album") saveToAlbum(s.word, s.text, s.ext);
+    else if(act==="fav"){ toggleFav(s.word, s.text, s.ext); b.classList.toggle("saved"); b.innerHTML=isFav(s.word)?"⭐ 已收藏":"⭐ 收藏"; }
+    else if(act==="like") likeWord(s.word);
+    else if(act==="polish"){ current=s; doPolish(); }
   });
 }
 
 async function doPolish(){
   if(!current) return;
+  const polishHost = current.host || document.querySelector("#uniView:not([hidden]) .uni-card-host") || cardHost;
+  const polishState={...current};
   toast("AI 正在换个角度想想…");
   try{
     const r = await generateWithAI(current.word, current.text);
-    // 润色：用 AI 产出的延展段刷新（有延展则替换，没有则整条替换释义）
+    // 乱想：用 AI 产出的延展段刷新（有延展则替换，没有则整条替换释义）
     let text=current.text, ext=current.ext;
     if(r.ext) ext=r.ext;
     if(!r.ext && r.entry) text=r.entry;
-    renderCard(current.word, text, ext, "ai");
+    polishState.text=text; polishState.ext=ext; polishState.src="ai"; current=polishState;
+    polishHost.innerHTML=cardHTML(polishState.word,text,ext,"ai");
+    bindCard(polishHost,polishState);
     toast("✨ 换个角度，有意思吧");
-  }catch(e){ toast("润色失败了，网络不太行"); }
+  }catch(e){ toast("乱想失败了，网络不太行"); }
 }
 
 /* ============ 搜索主流程 ============ */
@@ -640,10 +1192,18 @@ document.getElementById("dailyChip").addEventListener("click", e=>{
 const todayCard = document.getElementById("todayCard");
 if(todayCard) todayCard.addEventListener("click", ()=>{
   const w = document.getElementById("todayWord").textContent;
-  if(w && w !== "…") doSearch(w);
+  if(!w || w === "…") return;
+  const old=document.getElementById("todayInlineCard"); if(old){ old.remove(); return; }
+  const wrap=document.createElement("div"); wrap.id="todayInlineCard"; wrap.className="inline-card";
+  const text=BUILTIN[w]||"【名词】，一个正在被重新理解的词。";
+  wrap.innerHTML=cardHTML(w, text, getExt(w), "builtin");
+  todayCard.after(wrap);
+  bindCard(wrap,{word:w,text,ext:getExt(w)});
 });
-document.getElementById("backBtn").addEventListener("click", ()=>{ result.classList.remove("show"); hero.classList.remove("shrink"); searchInput.focus(); });
-document.getElementById("favOpen").addEventListener("click", ()=>{ renderFavList(); favMask.classList.add("show"); });
+const rantPosInput=document.getElementById("rantPosInput");
+if(rantPosInput) rantPosInput.addEventListener("change",()=>{ document.getElementById("rantCustomPos").hidden=rantPosInput.value!=="自定义"; });
+// 结果区不再显示“再搜一个”按钮；返回主页请点击底部“主页”Tab。
+document.getElementById("favOpen").addEventListener("click", ()=>{ renderMineView("fav", window.__activeTab || "search"); });
 document.querySelectorAll("[data-close]").forEach(b=>b.addEventListener("click", ()=>document.getElementById(b.dataset.close).classList.remove("show")));
 [imgMask,submitMask,favMask].forEach(m=>m.addEventListener("click", e=>{ if(e.target===m) m.classList.remove("show"); }));
 
@@ -671,7 +1231,6 @@ loadToday();
 let toastT; function toast(msg){ toastEl.textContent=msg; toastEl.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(()=>toastEl.classList.remove("show"),1900); }
 
 refreshFavBadge();
-document.getElementById("submitOpen").addEventListener("click", openSubmit);
 
 /* PWA */
 if("serviceWorker" in navigator){ window.addEventListener("load", ()=>navigator.serviceWorker.register("./sw.js").catch(()=>{})); }

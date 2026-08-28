@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>胡思辞典 · 使用中枢（本地版）</title>
+<style>
+  :root{
+    --bg:#0f1115; --bg2:#14171e; --panel:#171b23; --card:#1c212b;
+    --ink:#f3f4f7; --ink-soft:#9aa1ad; --line:rgba(255,255,255,.08);
+    --accent:#FF8A5B; --accent2:#E6728F;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+    background:radial-gradient(120% 80% at 50% -10%, #1a1f29 0%, var(--bg) 55%);
+    color:var(--ink); min-height:100vh; padding:28px 18px 60px;
+  }
+  .wrap{max-width:720px;margin:0 auto;}
+  .brand{font-size:24px;font-weight:900;letter-spacing:.5px;display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+  .brand .dot{width:11px;height:11px;border-radius:50%;background:var(--accent);box-shadow:0 0 14px var(--accent);}
+  .sub{color:var(--ink-soft);font-size:13.5px;margin:0 0 24px;line-height:1.7;}
+  .tag{display:inline-block;font-size:11px;font-weight:800;border-radius:999px;padding:2px 10px;vertical-align:2px;margin-left:6px;}
+  .tag.a{background:rgba(255,138,91,.15);color:var(--accent);border:1px solid rgba(255,138,91,.4);}
+  .tag.b{background:rgba(230,114,143,.15);color:var(--accent2);border:1px solid rgba(230,114,143,.4);}
+  .tag.c{background:rgba(91,156,201,.15);color:#5B9CC9;border:1px solid rgba(91,156,201,.4);}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px 20px;margin-bottom:14px;}
+  .card h2{margin:0 0 6px;font-size:16.5px;font-weight:900;display:flex;align-items:center;gap:8px;}
+  .card .desc{color:var(--ink-soft);font-size:13px;line-height:1.75;margin-bottom:10px;}
+  .row{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:10px 14px;margin-bottom:8px;flex-wrap:wrap;}
+  .row .lab{font-size:12px;color:var(--ink-soft);flex:none;min-width:64px;}
+  .row .val{font-size:13px;color:var(--accent);word-break:break-all;flex:1;min-width:200px;}
+  .row .copy{flex:none;background:var(--bg2);border:1px solid var(--line);color:var(--ink-soft);border-radius:8px;padding:5px 11px;font-size:12px;cursor:pointer;}
+  .row .copy:active{transform:scale(.94);}
+  .steps{display:flex;flex-direction:column;gap:8px;}
+  .step{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:11px 14px;font-size:13.5px;line-height:1.7;color:var(--ink-soft);}
+  .step b{color:var(--ink);font-weight:800;}
+  .step .n{display:inline-flex;width:20px;height:20px;border-radius:50%;background:var(--accent);color:#1a1206;font-size:12px;font-weight:900;align-items:center;justify-content:center;margin-right:8px;vertical-align:1px;}
+  .step .n2{background:var(--accent2);}
+  .warn{background:rgba(242,169,59,.08);border:1px solid rgba(242,169,59,.35);border-radius:12px;padding:11px 14px;font-size:13px;line-height:1.7;color:#F2A93B;}
+  .sec-title{font-size:14px;font-weight:900;margin:22px 0 10px;display:flex;align-items:center;gap:6px;}
+  .sec-title .bar{width:4px;height:14px;border-radius:2px;background:linear-gradient(180deg,var(--accent),var(--accent2));}
+  .foot{margin-top:30px;text-align:center;color:#5b626e;font-size:12px;line-height:1.8;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand"><span class="dot"></span>胡思辞典 · 使用中枢 <span style="font-size:12px;color:var(--ink-soft);font-weight:400">（本地版 · 仅自己用）</span></div>
+  <p class="sub">所有入口、操作流程、常见问题都在这一页。双击本文件即可打开，不用部署、不用上网。</p>
+
+  <div class="card">
+    <h2>🌐 站点入口</h2>
+    <div class="row"><span class="lab">正式域名</span><span class="val">https://husidict.top</span><button class="copy" onclick="c('https://husidict.top')">复制</button></div>
+    <div class="row"><span class="lab">国内备用</span><span class="val">https://707eb172194149b4a396eee865896ef4.app.workbuddy.link</span><button class="copy" onclick="c('https://707eb172194149b4a396eee865896ef4.app.workbuddy.link')">复制</button></div>
+    <div class="row"><span class="lab">GitHub Pages</span><span class="val">https://wn4kfwbw5f-max.github.io/husi-dict/</span><button class="copy" onclick="c('https://wn4kfwbw5f-max.github.io/husi-dict/')">复制</button></div>
+    <div class="row"><span class="lab">GitHub 仓库</span><span class="val">https://github.com/wn4kfwbw5f-max/husi-dict</span><button class="copy" onclick="c('https://github.com/wn4kfwbw5f-max/husi-dict')">复制</button></div>
+    <div class="desc" style="margin-top:10px">「正式域名」给别人用（国外/一般）；「国内备用」给国内朋友（更快）；GitHub 是发布后台，改版后去上传。</div>
+  </div>
+
+  <div class="card">
+    <h2>🛠️ 词条后台 <span class="tag b">登录口令：husi-admin-7q2x9k3m</span></h2>
+    <div class="row"><span class="lab">后台地址</span><span class="val">https://6958fc30803841e0bd177be4781212f0.app.workbuddy.link</span><button class="copy" onclick="c('https://6958fc30803841e0bd177be4781212f0.app.workbuddy.link')">复制</button></div>
+    <div class="row"><span class="lab">云端 API</span><span class="val">https://husi-d0gzi7winfcad405e-1462114755.ap-shanghai.app.tcloudbase.com/api/dict-full</span><button class="copy" onclick="c('https://husi-d0gzi7winfcad405e-1462114755.ap-shanghai.app.tcloudbase.com/api/dict-full')">复制</button></div>
+  </div>
+
+  <div class="card">
+    <h2>💻 本地文件位置 <span class="tag c">开发用</span></h2>
+    <div class="desc">
+      主站源码：<b style="color:var(--ink)">/Users/g/WorkBuddy/2026-07-31-21-21-04/husi-cidian/redesign/</b><br/>
+      云函数源码：<b style="color:var(--ink)">…/husi-cidian/cloudbase-function/</b><br/>
+      部署脚本：<b style="color:var(--ink)">…/husi-cidian/deploy/</b><br/>
+      GitHub 部署包：<b style="color:var(--ink)">…/husi-cidian/husicidian-github-pages-v3.zip</b>
+    </div>
+  </div>
+
+  <div class="sec-title"><span class="bar"></span>📖 日常操作 · 加词流程</div>
+  <div class="steps">
+    <div class="step"><span class="n">1</span>打开<b>词条后台</b> → 输入口令 <b>husi-admin-7q2x9k3m</b> 登录</div>
+    <div class="step"><span class="n">2</span>「<b>＋ 新增词条</b>」→ 填 <b>词 / 词性 / 释义</b>（释义自己写一句俏皮的）</div>
+    <div class="step"><span class="n">3</span>乱想Time 不用管 → 直接「<b>保存</b>」→ AI 自动生成延展段</div>
+    <div class="step"><span class="n">4</span>打开主站<b>刷新</b> → 搜这个词 → 能搜到 = 同步成功 ✅</div>
+    <div class="step"><span class="n">5</span>如果你想让别人打开 <b>husidict.top</b> 也搜到这词：因为 GitHub Pages 是静态包、不自动拉云端，需要拉云端 → 注入 dict.js → 重新打包 → 上传 GitHub（找靠谱跑 sync 脚本）</div>
+  </div>
+
+  <div class="sec-title"><span class="bar"></span>🔄 更新 GitHub（发布新版时）</div>
+  <div class="steps">
+    <div class="step"><span class="n2">1</span>把新文件打包 zip（找靠谱）</div>
+    <div class="step"><span class="n2">2</span>GitHub 仓库 → 「<b>+ ▼</b>」（Code 按钮左边）→「Upload files」→ <b>只拖文件、不要拖文件夹</b> → Commit</div>
+    <div class="step"><span class="n2">3</span>等 1-2 分钟，GitHub Pages 自动部署，husidict.top 自动更新</div>
+  </div>
+
+  <div class="sec-title"><span class="bar"></span>📲 装到手机（给别人时的引导文案）</div>
+  <div class="steps">
+    <div class="step"><span class="n">1</span><b>iPhone</b>：Safari 打开 husidict.top → 分享按钮 →「添加到主屏幕」</div>
+    <div class="step"><span class="n">2</span><b>安卓</b>：Chrome 打开 → 右上 ⋮ →「添加到主屏幕 / 安装应用」</div>
+    <div class="step"><span class="n">3</span><b>微信里打开</b>：先点「···」→「在浏览器中打开」再添加（微信内置浏览器不能加）</div>
+  </div>
+
+  <div class="warn" style="margin-top:20px">⚠️ <b>提醒</b>：husidict.top 走 GitHub Pages，国内访问时快时慢；给国内朋友优先用「国内备用」链接。云端 API 的 update 接口 bug 已修好但云函数还没重部署（需要时启用子账号密钥部署一次）。</div>
+
+  <div class="foot">胡思辞典 · 搜索形态小工具 · 撕纸毕加索</div>
+</div>
+<script>
+function c(t){
+  var ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();
+  try{document.execCommand("copy");}catch(e){}
+  document.body.removeChild(ta);
+  var b=event.target;b.textContent="✅ 已复制";setTimeout(function(){b.textContent="复制"},1200);
+}
+</script>
+</body>
+</html>

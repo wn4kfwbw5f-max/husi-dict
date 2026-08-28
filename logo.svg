@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- 主视觉同款渐变：橙 → 暖橙 → 粉 -->
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFB98A"/>
+      <stop offset="0.5" stop-color="#FF8A5B"/>
+      <stop offset="1" stop-color="#E6728F"/>
+    </linearGradient>
+    <linearGradient id="g2" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#FF8A5B"/>
+      <stop offset="1" stop-color="#E6728F"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 背景：深色圆角方（与主站一致） -->
+  <rect width="512" height="512" rx="96" fill="#0f1115"/>
+
+  <!-- 主体：两条斜线（翻开/合拢的书页）—— V 字 + 倒 V 字 形似书页+对话气泡 -->
+  <g stroke="url(#g)" stroke-width="10" stroke-linecap="round" fill="none">
+    <!-- 左书页：从底部到中心 -->
+    <line x1="132" y1="372" x2="256" y2="244"/>
+    <!-- 右书页：从中心到底部 -->
+    <line x1="256" y1="244" x2="380" y2="372"/>
+    <!-- 中心光柱：从书页中心向上射出（"胡思"一念） -->
+    <line x1="256" y1="244" x2="256" y2="118" stroke="url(#g2)"/>
+  </g>
+
+  <!-- 顶部：一个"光点"小圆（圆=圆/宇宙+辞典意象；小=克制） -->
+  <circle cx="256" cy="118" r="14" fill="url(#g)"/>
+</svg>
