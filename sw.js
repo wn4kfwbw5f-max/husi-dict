@@ -3,7 +3,7 @@
    - 应用壳（index.html 等静态文件）缓存到本地，离线也能打开。
    - 页面导航（HTML）走 network-first，保证重新部署后能拿到最新版。
    - /api/* 接口永远走网络（不缓存），因为释义需要实时 AI / D1。 */
-const CACHE = "husicidian-search-v3";
+const CACHE = "husicidian-search-v4";
 const ASSETS = ["./", "./index.html", "./dict.js", "./manifest.webmanifest", "./icon.svg", "./icon-180.png", "./icon-192.png", "./icon-512.png", "./admin-dict.html"];
 
 self.addEventListener("install", (e) => {

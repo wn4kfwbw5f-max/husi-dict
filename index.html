@@ -71,7 +71,8 @@
   .today:hover{border-color:rgba(255,138,91,.55);}
   .today:active{transform:scale(.98);}
   .today-tag{font-size:11px;font-weight:900;color:#1a1206;background:linear-gradient(135deg,var(--accent),#E6728F);border-radius:999px;padding:3px 9px;flex:none;letter-spacing:.5px;}
-  .today-word{font-size:17px;font-weight:900;color:var(--ink);flex:1;text-align:left;}
+  .today-word{font-size:17px;font-weight:900;color:var(--ink);flex:1;text-align:left;min-height:22px}
+  .today-word:empty{min-width:60px;display:inline-block;}
   .today-sub{font-size:12px;color:var(--ink-soft);flex:none;}
   .today-arrow{color:var(--accent);font-size:15px;flex:none;}
   .chip{background:var(--card); border:1px solid var(--line); color:var(--ink-soft); border-radius:999px; padding:8px 14px; font-size:13px; cursor:pointer;}
@@ -161,16 +162,11 @@
       <button type="submit" aria-label="搜索">🔍</button>
     </form>
     <div class="quick" id="quick">
-      <button class="chip" data-w="咖啡">咖啡</button>
-      <button class="chip" data-w="拖延">拖延</button>
-      <button class="chip" data-w="家">家</button>
-      <button class="chip" data-w="孤独">孤独</button>
-      <button class="chip" data-w="人工智能">人工智能</button>
       <button class="chip daily" id="dailyChip">🎲 抽个胡思</button>
     </div>
     <div class="today" id="todayCard" hidden>
       <span class="today-tag">今日胡思</span>
-      <span class="today-word" id="todayWord">…</span>
+      <span class="today-word" id="todayWord"></span>
       <span class="today-sub">点一下搜它</span>
       <span class="today-arrow">→</span>
     </div>
@@ -247,6 +243,34 @@ function track(event, word){
     }).catch(()=>{});
   }catch(e){}
 }
+
+/* ============ 快捷标签：每次随机 3 词 + 抽个胡思并排 ============ */
+function shuffleQuick(){
+  const host = document.getElementById("quick");
+  if(!host) return;
+  // 保留 #dailyChip 在最后，前面插入 3 个随机词
+  const daily = host.querySelector("#dailyChip");
+  // 清掉非 daily 的子元素
+  Array.from(host.querySelectorAll(":scope > *")).forEach(c => { if(c !== daily) c.remove(); });
+  // 从合并词库（含云端）随机 3 个不重复的词
+  const keys = Object.keys(BUILTIN);
+  if(keys.length < 3) return;
+  // Fisher-Yates 洗牌取前 3
+  const pool = keys.slice();
+  for(let i=pool.length-1; i>0; i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  const picked = pool.slice(0, 3);
+  picked.forEach(w => {
+    const b = document.createElement("button");
+    b.className = "chip";
+    b.dataset.w = w;
+    b.textContent = w;
+    host.insertBefore(b, daily);
+  });
+}
+shuffleQuick();
 
 /* ============ 今日胡思（每日一词）============ */
 async function loadToday(){
