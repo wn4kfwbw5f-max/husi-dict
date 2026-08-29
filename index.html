@@ -27,7 +27,7 @@
   }
   /* 顶栏 */
   .topbar{
-    position:sticky;top:0;z-index:100;
+    position:fixed;left:0;right:0;top:0;z-index:100;
     display:flex; align-items:center; justify-content:space-between;
     padding:14px 18px; padding-top:calc(14px + env(safe-area-inset-top));
     background:rgba(14,16,22,.94);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
@@ -42,7 +42,7 @@
   .badge{background:var(--accent); color:#1a1206; font-size:11px; font-weight:800; border-radius:999px; min-width:18px; height:18px; display:inline-flex; align-items:center; justify-content:center; padding:0 5px;}
 
   /* 首页 hero */
-  .hero{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:0 22px 40px; text-align:center; transition:padding .4s, transform .4s;}
+  .hero{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:calc(76px + env(safe-area-inset-top)) 22px 40px; text-align:center; transition:padding .4s, transform .4s;}
   .hero.shrink{flex:0 0 auto; padding-top:6px; padding-bottom:12px; justify-content:flex-start; transform:none;}
   .hero-title{font-size:46px; font-weight:900; letter-spacing:2px; margin:0 0 8px;
     background:linear-gradient(120deg,#FFB98A,#FF8A5B 40%,#E6728F 90%); -webkit-background-clip:text; background-clip:text; color:transparent;}
@@ -82,7 +82,7 @@
   .hot-title{font-size:12px;color:var(--ink-soft);margin-bottom:9px;letter-spacing:.5px;}
 
   /* Panel 通用：默认显示 active 那个，hidden 隐藏 */
-  .panel{width:100%;max-width:560px;display:flex;flex-direction:column;align-items:center;padding:0 22px;margin-top:20px}
+  .panel{width:100%;max-width:560px;display:flex;flex-direction:column;align-items:center;padding:0 22px;margin-top:calc(86px + env(safe-area-inset-top))}
   .panel[hidden]{display:none}
   .panel-title{font-size:22px;font-weight:900;letter-spacing:1px;margin:0 0 4px;align-self:flex-start;
     background:linear-gradient(120deg,#FFB98A,#FF8A5B 40%,#E6728F 90%);
@@ -283,7 +283,7 @@
   .mine-item .badge + .mine-arrow{margin-left:6px}
   .mine-content{width:100%;margin-top:14px;min-height:60px;font-size:13.5px;color:var(--ink-soft);text-align:center}
   body.mine-subpage .tabbar{display:none}
-  .mine-content.subpage{position:fixed;z-index:80;inset:0;background:var(--bg);padding:calc(26px + env(safe-area-inset-top)) 18px calc(90px + env(safe-area-inset-bottom));box-sizing:border-box;margin:0;overflow:auto;text-align:left}
+  .mine-content.subpage{position:fixed;z-index:80;left:0;right:0;top:0;bottom:0;background:var(--bg);padding:calc(86px + env(safe-area-inset-top)) 18px calc(90px + env(safe-area-inset-bottom));box-sizing:border-box;margin:0;overflow:auto;text-align:left}
   .mine-subhead{display:flex;align-items:center;gap:12px;margin-bottom:18px;color:var(--ink);font-size:20px;font-weight:900}.mine-back{background:none;border:0;color:var(--ink-soft);font-size:26px;cursor:pointer}
   .mine-rant-card,.mine-card-row{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin-bottom:8px;text-align:left;overflow:hidden}
   .mine-fav-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:start}.mine-fav-tile{min-width:0;cursor:pointer}.mine-fav-mini{position:relative;background:var(--panel);border:1px solid var(--accent-soft);border-left:4px solid var(--accent);border-radius:12px;padding:11px 10px 13px;min-height:145px;box-sizing:border-box;box-shadow:0 5px 14px rgba(0,0,0,.16);transition:transform .18s,box-shadow .18s}.mine-fav-tile:active .mine-fav-mini{transform:scale(.98)}.mine-fav-mini .term{font-size:20px;font-weight:900;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mine-fav-mini .pos{display:inline-block;color:var(--accent);font-size:11px;border:1px solid currentColor;border-radius:8px;padding:2px 6px;margin:6px 0}.mine-fav-mini .def{font-size:12px;line-height:1.5;color:var(--ink);display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}.mine-fav-mini .mini-ext{display:none}.mini-heart{position:absolute;right:9px;bottom:8px;font-size:12px}.mine-fav-detail{grid-column:1 / -1;animation:cardIn .28s ease}.mine-fav-detail .card{margin:0}.mine-fav-detail .ext{display:block}.mine-fav-detail .actions [data-act="polish"]{display:none}
