@@ -456,9 +456,10 @@
 const XHS_HANDLE = "撕纸毕加索";
 const XHS_URL    = "https://xhslink.cn/o/7s6Fe1hRVeg";   // 留空：用搜索结果页兜底；填了则直接跳主页
 
-const OWNER_KEY   = "sk-cde10a22210d495fb63848d27b384cff";
-const OWNER_BASE  = "https://api.deepseek.com/v1";
-const OWNER_MODEL = "deepseek-chat";
+// 改为经由 Cloudflare Worker 中转（密钥留在服务端，更安全也更稳）
+const OWNER_KEY   = "";
+const OWNER_BASE  = "";
+const OWNER_MODEL = "";
 // 后台云端词库地址（后台增删内置词条后，主站会从这里自动同步新词条）
 const DICT_REMOTE = "https://api.husidict.top/api/dict-full";
 const API_BASE = "https://api.husidict.top";
@@ -945,18 +946,15 @@ async function generateWithAI(word, existingEntry){
 要求：①格式灵活多变，严禁固定用「之所以…是因为…」句式；②若是专有名词（影视/小说/动漫/游戏/历史人物/品牌/网络流行语），延展必须**先贴大众公知**（它是什么作品/品牌、有什么标志元素/角色/台词），再发散——绝不凭空捏造与公众认知冲突的背景；③先立住该词真实本质再发散；④只输出这段延展文字本身，不要前后缀。`
     : `请为「${word}」编写一条《胡思辞典》风格的释义，并附一段「乱想Time」延展。
 要求：①先抓住它真实、独有、可被验证的本质特征（若是专有名词——影视/小说/动漫/游戏/历史人物/品牌/网络流行语——必须先贴大众公知常识：它是什么作品/品牌/领域、有哪些标志元素/角色/台词，再做胡思），再用离谱却贴切、画面感强的比喻讲出来；②必须是「${word}」专属的，换词不成立，绝不凭空捏造与公众认知冲突的背景；③格式严格为「【词性】，释义」；④换行另起一段写「⟨胡思延展⟩」+ 延展段；⑤只输出以上内容。`;
-  const res = await fetch(OWNER_BASE+"/chat/completions",{
+  const res = await fetch(API_BASE+"/api/explain",{
     method:"POST",
-    headers:{"Content-Type":"application/json","Authorization":"Bearer "+OWNER_KEY},
-    body:JSON.stringify({model:OWNER_MODEL, messages:[{role:"system",content:sys},{role:"user",content:userContent}], temperature:0.95})
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({word, existingEntry})
   });
   if(!res.ok) throw new Error("HTTP "+res.status);
-  const content = (await res.json()).choices?.[0]?.message?.content || "";
-  let entry=hasEntry?existingEntry:content, ext="";
-  const idx=content.indexOf("⟨胡思延展⟩");
-  if(idx>=0){ if(!hasEntry) entry=content.slice(0,idx).trim(); ext=content.slice(idx+6).trim(); }
-  else if(hasEntry){ ext=content; }
-  return {entry, ext};
+  const data = await res.json();
+  if(data.error) throw new Error(data.error);
+  return data;
 }
 
 /* ============ 渲染词卡 ============ */
